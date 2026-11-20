@@ -18,3 +18,7 @@ gomobile/bind/
 
 # 系统
 .DS_Store
+
+# 引擎 AAR 拆解产物（CI/本地由 scripts/extract-aar.sh 生成）
+core/engine/libs/
+core/engine/src/main/jniLibs/

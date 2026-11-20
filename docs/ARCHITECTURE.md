@@ -1,8 +1,17 @@
 # Snishaper-Droid-Native 架构与模块边界
 
-> 状态：**边界设计稿 v1（待评审）**。本文档是本仓库的施工契约：先定边界，再动代码。
+> 状态：**边界设计 v1.1（决策已确认，M0 骨架已落地）**。本文档是本仓库的施工契约：先定边界，再动代码。
 > 后端（gomobile AAR + Kotlin 引擎宿主 + VpnService）**原样迁移、行为不变**；前端由
 > React 19 + MUI（WebView 渲染）重写为 **Jetpack Compose 原生 UI**。
+>
+> **已确认决策（2026-11-21）**：
+> 1. 构建走 GitHub Actions（本仓库 `.github/workflows/android.yml`，与 Snishaper-Droid 同工具链）。
+> 2. applicationId = `com.snishaper.android.native`（debug 构建加 `.debug` 后缀，与旧版并行安装）。
+>    注意：`native` 是 Java 关键字，只能用于 applicationId，代码 namespace 用
+>    `com.snishaper.android.app` 等不含 native 的形式。
+> 3. feature 保持 11 个模块不变。
+> 4. UI 采用 Jetpack Compose + Material 3（AGP 9 内置 Kotlin + compose 编译器插件 2.4.21）。
+> 5. M0 骨架已本地验证：`assembleDebug` 通过，引擎 AAR（libgojni.so）正确打包进 APK。
 
 ---
 
@@ -153,7 +162,7 @@ feature ui    Compose（无状态渲染，事件上抛）
 
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
-| M0 骨架 | Gradle 多模块 + 依赖规则 + 空壳可编译 | CI `assembleDebug` 绿；feature 互依即编译失败 |
+| M0 骨架 | Gradle 多模块 + 依赖规则 + 空壳可编译 | ✅ 已完成：本地 `assembleDebug` 通过（含引擎 AAR 打包）；CI 待仓库推送后验证 |
 | M1 引擎贯通 | core:engine/data 迁移 + Dashboard 最小闭环（启动/停止/状态） | 真机可启停代理，状态实时刷新 |
 | M2 核心页 | Connections / Logs / Rules / Routing | 与旧版功能对齐清单逐条勾 |
 | M3 网络配置 | DNS / ECH / NAT64 / IP 池 / 迁移服务器 | 测试按钮行为与旧版一致 |
@@ -162,11 +171,15 @@ feature ui    Compose（无状态渲染，事件上抛）
 
 ---
 
-## 7. 待确认决策点
+## 7. 决策记录（已确认）
 
-1. **仓库/应用名**：暂定 `Snishaper-Droid-Native`，可改。
-2. **applicationId**：建议保持 `com.snishaper.android`（作为正式替代，覆盖安装升级）；
-   debug 构建加 `.debug` 后缀便于与旧版并行测试。若需两版共存请提出。
-3. **feature 模块粒度**：目前 11 个 feature 模块按页面域拆分；如嫌碎可合并为
-   3~4 个大域（network / config / system）。
-4. **UI 语言**：Compose + Material 3 动态取色仅 Android 12+，12 以下回退静态主题——已按此设计。
+1. **仓库/应用名**：`Snishaper-Droid-Native`。
+2. **applicationId**：`com.snishaper.android.native`（正式替代，覆盖安装升级）；
+   debug 构建加 `.debug` 后缀与旧版并行测试。`native` 是 Java 关键字，仅用于
+   applicationId；各模块 namespace 不含该词。
+3. **feature 模块粒度**：11 个 feature 模块，按页面域拆分（已确认保持不变）。
+4. **UI 框架**：Jetpack Compose + Material 3；Android 12+ 动态取色，以下回退静态主题。
+5. **AAR 接入方式**：`core/engine/libs/snishaper-core.aar`（git 忽略，CI 的
+   gomobile bind 产物）。库模块带本地 AAR 依赖时 AGP 禁止 bundle AAR——引擎模块
+   的 bundle*Aar 任务已禁用（其 AAR 从不单独发布，消费方走工程依赖）。
+6. **字节码目标**：全部模块 Java 17 / jvmTarget 17；不锁 toolchain（避免强制下载 JDK）。

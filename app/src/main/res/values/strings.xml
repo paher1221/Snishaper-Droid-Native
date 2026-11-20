@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default locale: Simplified Chinese (same default as the desktop client). -->
+<resources>
+    <string name="app_name">SniShaper</string>
+
+    <!-- Shell / drawer -->
+    <string name="cd_open_drawer">打开导航抽屉</string>
+    <string name="cd_close_drawer">关闭导航抽屉</string>
+    <string name="cd_logo">SniShaper 标志</string>
+    <string name="drawer_theme_light">浅色模式</string>
+    <string name="drawer_theme_dark">深色模式</string>
+    <string name="drawer_theme_switch_light">切换到浅色模式</string>
+    <string name="drawer_theme_switch_dark">切换到深色模式</string>
+
+    <!-- Navigation: order mirrors desktop Sidebar.tsx (9 items, no CA entry). -->
+    <string name="nav_dashboard">仪表盘</string>
+    <string name="nav_proxies">代理</string>
+    <string name="nav_rules">规则</string>
+    <string name="nav_routing">自动分流</string>
+    <string name="nav_dns">DNS 设置</string>
+    <string name="nav_evolution">演进模式</string>
+    <string name="nav_logs">实时日志</string>
+    <string name="nav_settings">设置</string>
+    <string name="nav_about">关于</string>
+
+    <!-- Welcome (first launch language picker) -->
+    <string name="welcome_title">欢迎使用 SniShaper</string>
+    <string name="welcome_subtitle">选择界面语言后开始使用</string>
+    <string name="welcome_pick_language">选择语言</string>
+    <string name="welcome_start">开始使用</string>
+    <string name="language_zh">简体中文</string>
+    <string name="language_en">English</string>
+    <string name="language_ru">Русский</string>
+
+    <!-- Theme / appearance -->
+    <string name="theme_title">配色主题</string>
+    <string name="theme_default">默认 MUI</string>
+    <string name="theme_snishaper">经典 SniShaper 蓝</string>
+    <string name="theme_forest">森林绿</string>
+    <string name="theme_sunset">日落橙</string>
+    <string name="theme_ocean">海洋青</string>
+    <string name="theme_graphite">石墨灰</string>
+    <string name="appearance_title">外观</string>
+    <string name="appearance_light">浅色</string>
+    <string name="appearance_dark">深色</string>
+    <string name="appearance_system">跟随系统</string>
+
+    <!-- Common -->
+    <string name="common_apply">应用</string>
+    <string name="common_cancel">取消</string>
+    <string name="common_save">保存</string>
+    <string name="common_loading">加载中…</string>
+    <string name="common_add">添加</string>
+    <string name="common_search">搜索</string>
+    <string name="common_test">测试</string>
+    <string name="common_refresh">刷新</string>
+    <string name="common_clear">清空</string>
+    <string name="common_enabled">已启用</string>
+    <string name="common_disabled">已停用</string>
+    <string name="common_coming_soon">即将推出</string>
+    <string name="common_skeleton_note">骨架阶段：数据与交互将在后续阶段接入</string>
+    <string name="common_on">开</string>
+    <string name="common_off">关</string>
+    <string name="common_empty">暂无数据</string>
+    <string name="common_running">运行中</string>
+    <string name="common_stopped">已停止</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">仪表盘</string>
+    <string name="dashboard_subtitle">概览代理、VPN 与连接状态</string>
+    <string name="dashboard_start_proxy">启动代理</string>
+    <string name="dashboard_stop_proxy">停止代理</string>
+    <string name="dashboard_vpn">VPN</string>
+    <string name="dashboard_core_status">核心状态</string>
+    <string name="dashboard_run_status">运行状态</string>
+    <string name="dashboard_work_mode">工作模式</string>
+    <string name="dashboard_port">端口</string>
+    <string name="dashboard_vpn_status">VPN 状态</string>
+    <string name="dashboard_conn_info">连接信息</string>
+    <string name="dashboard_ready">就绪</string>
+
+    <!-- Proxies -->
+    <string name="proxies_title">代理</string>
+    <string name="proxies_subtitle">管理 ECH 配置与 NAT64 映射</string>
+    <string name="proxies_ech_section">ECH 配置管理</string>
+    <string name="proxies_nat64_section">NAT64 配置管理</string>
+    <string name="proxies_add_ech">添加 ECH 配置</string>
+    <string name="proxies_add_nat64">添加 NAT64 配置</string>
+    <string name="proxies_empty_ech">暂无 ECH 配置</string>
+    <string name="proxies_empty_nat64">暂无 NAT64 配置</string>
+
+    <!-- Rules -->
+    <string name="rules_title">站点规则</string>
+    <string name="rules_subtitle">按站点分组管理分流方式</string>
+    <string name="rules_filter_all">全部</string>
+    <string name="rules_filter_tlsrf">TLS 分片</string>
+    <string name="rules_filter_transparent">透明转发</string>
+    <string name="rules_search_hint">搜索规则、分组或域名</string>
+    <string name="rules_empty">暂无规则数据</string>
+    <string name="rules_add">新建规则</string>
+
+    <!-- Routing -->
+    <string name="routing_title">自动分流</string>
+    <string name="routing_subtitle">查看流量走向与规则源状态</string>
+    <string name="routing_traffic_flow">流量走向</string>
+    <string name="routing_waiting_traffic">等待流量…</string>
+    <string name="routing_gfwlist">GFWList 规则源</string>
+    <string name="routing_gfwlist_inactive">规则源未激活</string>
+
+    <!-- DNS -->
+    <string name="dns_title">安全 DNS</string>
+    <string name="dns_subtitle">管理 DoH 节点与解析测速</string>
+    <string name="dns_test_all">全部测试</string>
+    <string name="dns_add">添加节点</string>
+    <string name="dns_empty">暂无 DNS 节点</string>
+
+    <!-- Evolution -->
+    <string name="evolution_title">演进模式</string>
+    <string name="evolution_subtitle">自动探测域名连通性并生成规则</string>
+    <string name="evolution_tab_test">测试</string>
+    <string name="evolution_tab_rules">规则</string>
+    <string name="evolution_tab_results">结果</string>
+    <string name="evolution_domains_hint">每行一个域名</string>
+    <string name="evolution_enable_ipv6">启用 IPv6</string>
+    <string name="evolution_start">开始测试</string>
+    <string name="evolution_empty_results">暂无测试结果</string>
+    <string name="evolution_empty_rules">暂无生成的规则</string>
+
+    <!-- Logs -->
+    <string name="logs_title">系统日志</string>
+    <string name="logs_subtitle">查看代理与核心运行日志</string>
+    <string name="logs_capture">采集日志</string>
+    <string name="logs_clear">清空</string>
+    <string name="logs_search_hint">搜索关键字、域名或错误码</string>
+    <string name="logs_empty">暂无日志</string>
+    <string name="logs_capture_off">采集未开启</string>
+
+    <!-- Settings -->
+    <string name="settings_title">设置</string>
+    <string name="settings_subtitle">端口、外观、语言与启动行为</string>
+    <string name="settings_general">通用</string>
+    <string name="settings_startup">启动</string>
+    <string name="settings_port">代理端口</string>
+    <string name="settings_port_desc">HTTP 与 SOCKS5 共用该端口</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_auto_start_proxy">启动后自动开代理</string>
+    <string name="settings_auto_start_proxy_desc">应用启动时自动开始监听代理端口</string>
+    <string name="settings_auto_update_rules">自动更新规则</string>
+    <string name="settings_auto_update_rules_desc">启动时检查并合并最新规则</string>
+    <string name="settings_about">关于</string>
+
+    <!-- About -->
+    <string name="about_title">关于 SniShaper</string>
+    <string name="about_subtitle">安全、快速的网络连接工具</string>
+    <string name="about_version">版本</string>
+    <string name="about_channel_stable">稳定版</string>
+    <string name="about_features">核心特性</string>
+    <string name="about_feature_ech">ECH 加密</string>
+    <string name="about_feature_tlsfrag">TLS 分片</string>
+    <string name="about_feature_dns">安全 DNS</string>
+    <string name="about_community">社区</string>
+    <string name="about_website">官方网站</string>
+    <string name="about_github">GitHub</string>
+    <string name="about_copyright">Copyleft © 2025-2026 SniShaper Team</string>
+
+    <!-- VPN (TUN mode) -->
+    <string name="vpn_notification_channel">TUN 模式通知</string>
+    <string name="vpn_notification_title">SniShaper TUN 模式</string>
+    <string name="vpn_notification_text">代理核心正在通过 TUN 接口转发流量</string>
+    <string name="dashboard_vpn_start">开启 VPN</string>
+    <string name="dashboard_vpn_stop">停止 VPN</string>
+    <string name="dashboard_vpn_consent_needed">需要授予 VPN 权限后重试</string>
+    <string name="dashboard_vpn_failed">VPN 启动失败</string>
+
+    <!-- Common (Stage 4 additions) -->
+    <string name="common_edit">编辑</string>
+    <string name="common_delete">删除</string>
+    <string name="common_fetch">获取</string>
+    <string name="common_reset">重置</string>
+    <string name="common_priority">优先级</string>
+    <string name="common_done">完成</string>
+    <string name="common_saving">保存中…</string>
+    <string name="common_confirm_stop">确认停止</string>
+    <string name="common_upstreams">上游</string>
+
+    <!-- Proxies page -->
+    <string name="proxies_field_name">名称</string>
+    <string name="proxies_field_discovery">探测域名</string>
+    <string name="proxies_field_doh">DoH 地址</string>
+    <string name="proxies_field_prefix">NAT64 前缀</string>
+    <string name="proxies_field_domain">域名</string>
+    <string name="proxies_fetch_ech">在线获取 ECH</string>
+    <string name="proxies_edit_ech">编辑 ECH 配置</string>
+    <string name="proxies_ech_config_size">配置大小：%1$d 字节</string>
+    <string name="proxies_delete_ech_confirm">确定删除 ECH 配置 “%1$s”？</string>
+    <string name="proxies_delete_nat64_confirm">确定删除 NAT64 配置 “%1$s”？</string>
+
+    <!-- Rules page -->
+    <string name="rules_field_name">分组名称</string>
+    <string name="rules_field_domains">域名（每行一个）</string>
+    <string name="rules_field_upstream">上游</string>
+    <string name="rules_mode_tlsrf">tls-rf</string>
+    <string name="rules_mode_transparent">transparent</string>
+    <string name="rules_mode_direct">direct（内置）</string>
+    <string name="rules_count">%1$d 条规则</string>
+    <string name="rules_showing">%1$d / %2$d</string>
+    <string name="rules_delete_confirm">确定删除规则 “%1$s”？</string>
+    <string name="rules_enabled">启用规则</string>
+    <string name="rules_domains_preview">%1$s 个域名</string>
+
+    <!-- Routing page -->
+    <string name="routing_domain">域名</string>
+    <string name="routing_mode">模式</string>
+    <string name="routing_time">时间</string>
+    <string name="routing_domain_count">规则域数量：%1$d</string>
+
+    <!-- DNS page -->
+    <string name="dns_field_name">名称</string>
+    <string name="dns_field_url">DoH URL</string>
+    <string name="dns_field_sni">SNI（可留空）</string>
+    <string name="dns_field_ips">IP 列表（逗号分隔，可留空）</string>
+    <string name="dns_ech_enable">启用 ECH</string>
+    <string name="dns_quic_enable">启用 QUIC</string>
+    <string name="dns_test_ok">成功</string>
+    <string name="dns_test_fail_prefix">失败：</string>
+    <string name="dns_test_latency_suffix"> ms</string>
+    <string name="dns_test_progress">测试中…</string>
+    <string name="dns_delete_confirm">确定删除节点 “%1$s”？</string>
+    <string name="dns_priority_up">上移</string>
+
+    <!-- Evolution page -->
+    <string name="evolution_stop">停止测试</string>
+    <string name="evolution_progress">进度：%1$d / %2$d</string>
+    <string name="evolution_status_running">测试进行中</string>
+    <string name="evolution_status_done">测试完成</string>
+    <string name="evolution_reachable">可达</string>
+    <string name="evolution_unreachable">不可达</string>
+    <string name="evolution_best_ip">最佳 IP：%1$s</string>
+    <string name="evolution_delay">延迟：%1$d ms</string>
+    <string name="evolution_apply">应用规则</string>
+    <string name="evolution_applied">已应用</string>
+    <string name="evolution_apply_unsupported">该结果的趋势不适用于安卓（仅 TLS 分片 / 直连可应用）</string>
+    <string name="evolution_rule_mode">模式：%1$s</string>
+
+    <!-- Logs page -->
+    <string name="logs_pause">暂停滚动</string>
+    <string name="logs_resume">继续滚动</string>
+
+    <!-- Settings page (engine-backed) -->
+    <string name="settings_port_applied">端口已应用</string>
+    <string name="settings_dynamic_color_title">动态取色</string>
+    <string name="settings_dynamic_color_desc">跟随系统壁纸生成配色（Android 12+）</string>
+    <string name="logs_waiting">等待引擎日志…</string>
+    <string name="about_core_version">内核版本</string>
+</resources>

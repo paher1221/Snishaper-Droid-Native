@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vpn_notification_channel">TUN 模式通知</string>
+    <string name="vpn_notification_title">SniShaper TUN 模式</string>
+    <string name="vpn_notification_text">代理核心正在通过 TUN 接口转发流量</string>
+</resources>
