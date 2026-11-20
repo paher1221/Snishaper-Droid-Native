@@ -143,4 +143,25 @@ object SnishaperEngine {
     }
 
     const val DEFAULT_TUN_MTU = 1500
+
+    // ------------------------------------------------------------------
+    // 代理生命周期与状态（M1：仓库层的类型化透传；gomobile 的 error 返回
+    // 会以异常抛出，由仓库层统一捕获为 AppResult）
+    // ------------------------------------------------------------------
+
+    suspend fun startProxy() = io { requireApp().startProxy() }
+
+    suspend fun stopProxy() = io { requireApp().stopProxy() }
+
+    suspend fun isProxyRunning(): Boolean = io { requireApp().isProxyRunning }
+
+    suspend fun proxyMode(): String = io { requireApp().proxyMode }
+
+    suspend fun setListenPort(port: Int) = io { requireApp().setListenPort(port) }
+
+    suspend fun statsJSON(): String = io { requireApp().statsJSON }
+
+    suspend fun tunStatusJSON(): String = io { requireApp().getTUNStatusJSON() }
+
+    suspend fun buildInfo(): BuildInfo = io { BuildInfo.fromJson(requireApp().buildInfoJSON) }
 }

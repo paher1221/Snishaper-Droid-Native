@@ -2,6 +2,7 @@ package com.snishaper.android.app
 
 import android.app.Application
 import com.snishaper.android.core.engine.SnishaperEngine
+import com.snishaper.android.core.data.DataGraph
 
 /**
  * Starts the gomobile engine once per process. The engine carries the full
@@ -13,5 +14,6 @@ class SnishaperApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         SnishaperEngine.initialize(this)
+        DataGraph.init(this)
     }
 }

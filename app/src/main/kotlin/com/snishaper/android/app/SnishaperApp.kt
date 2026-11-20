@@ -24,7 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.snishaper.android.feature.connections.ConnectionsScreen
-import com.snishaper.android.feature.dashboard.DashboardScreen
+import com.snishaper.android.feature.dashboard.ui.DashboardScreen
 import com.snishaper.android.feature.dns.DnsScreen
 import com.snishaper.android.feature.evolution.EvolutionScreen
 import com.snishaper.android.feature.logs.LogsScreen

@@ -1,0 +1,17 @@
+<resources>
+    <string name="dashboard_title">仪表盘</string>
+    <string name="dashboard_proxy_start">启动代理</string>
+    <string name="dashboard_proxy_stop">停止代理</string>
+    <string name="dashboard_proxy_running">运行中</string>
+    <string name="dashboard_proxy_stopped">已停止</string>
+    <string name="dashboard_mode_port">模式：%1$s · 端口：%2$d</string>
+    <string name="dashboard_stats_down">下载</string>
+    <string name="dashboard_stats_up">上传</string>
+    <string name="dashboard_tun_on">TUN 隧道</string>
+    <string name="dashboard_tun_off">TUN 隧道</string>
+    <string name="dashboard_tun_unsupported">此设备不支持 TUN</string>
+    <string name="dashboard_tun_starting">TUN 正在启动…</string>
+    <string name="dashboard_tun_stopped">TUN 已停止</string>
+    <string name="dashboard_tun_failed">TUN 操作失败：%1$s</string>
+    <string name="dashboard_proxy_toggle_failed">代理操作失败：%1$s</string>
+</resources>

@@ -55,3 +55,36 @@ data class RouteEvent(
     val mode: String,
     val timestamp: Long = System.currentTimeMillis(),
 )
+
+/** 流量统计（Go `statsPayload`：down/up/etc 字节计数）。 */
+@Serializable
+data class ProxyStats(
+    @SerialName("down") val down: Long = 0,
+    @SerialName("up") val up: Long = 0,
+    @SerialName("etc") val etc: Long = 0,
+) {
+    companion object {
+        private val parser = Json { ignoreUnknownKeys = true }
+
+        fun fromJson(json: String): ProxyStats =
+            runCatching { parser.decodeFromString<ProxyStats>(json) }
+                .getOrDefault(ProxyStats())
+    }
+}
+
+/** TUN 隧道状态（Go `tunStatusPayload`）。 */
+@Serializable
+data class TunStatus(
+    @SerialName("supported") val supported: Boolean = true,
+    @SerialName("running") val running: Boolean = false,
+    @SerialName("enabled") val enabled: Boolean = false,
+    @SerialName("message") val message: String = "",
+) {
+    companion object {
+        private val parser = Json { ignoreUnknownKeys = true }
+
+        fun fromJson(json: String): TunStatus =
+            runCatching { parser.decodeFromString<TunStatus>(json) }
+                .getOrDefault(TunStatus())
+    }
+}

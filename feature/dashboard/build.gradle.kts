@@ -31,4 +31,6 @@ dependencies {
     implementation(project(":core:data"))
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    // VPN 授权弹窗：rememberLauncherForActivityResult
+    implementation(libs.androidx.activity.compose)
 }

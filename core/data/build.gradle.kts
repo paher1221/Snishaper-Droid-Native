@@ -29,4 +29,6 @@ dependencies {
     implementation(project(":core:engine"))
     implementation(project(":core:common"))
     implementation(libs.kotlinx.coroutines.android)
+    // TunRepository: ContextCompat.startForegroundService
+    implementation(libs.androidx.core.ktx)
 }

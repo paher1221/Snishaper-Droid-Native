@@ -1,0 +1,17 @@
+<resources>
+    <string name="dashboard_title">Dashboard</string>
+    <string name="dashboard_proxy_start">Start proxy</string>
+    <string name="dashboard_proxy_stop">Stop proxy</string>
+    <string name="dashboard_proxy_running">Running</string>
+    <string name="dashboard_proxy_stopped">Stopped</string>
+    <string name="dashboard_mode_port">Mode: %1$s · Port: %2$d</string>
+    <string name="dashboard_stats_down">Download</string>
+    <string name="dashboard_stats_up">Upload</string>
+    <string name="dashboard_tun_on">TUN tunnel</string>
+    <string name="dashboard_tun_off">TUN tunnel</string>
+    <string name="dashboard_tun_unsupported">TUN is not supported on this device</string>
+    <string name="dashboard_tun_starting">TUN is starting…</string>
+    <string name="dashboard_tun_stopped">TUN stopped</string>
+    <string name="dashboard_tun_failed">TUN operation failed: %1$s</string>
+    <string name="dashboard_proxy_toggle_failed">Proxy operation failed: %1$s</string>
+</resources>
