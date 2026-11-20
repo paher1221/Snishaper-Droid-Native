@@ -1,0 +1,20 @@
+# Gradle
+.gradle/
+build/
+local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Android
+captures/
+*.apk.idsig
+
+# Go / gomobile 中间产物
+gomobile/*.aar
+gomobile/bind/
+
+# 系统
+.DS_Store
