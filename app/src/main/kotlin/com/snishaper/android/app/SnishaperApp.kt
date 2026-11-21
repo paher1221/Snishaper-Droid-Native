@@ -2,21 +2,29 @@ package com.snishaper.android.app
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.Dns
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.ListAlt
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.compose.NavHost
@@ -34,10 +42,12 @@ import com.snishaper.android.feature.profiles.ProfilesScreen
 import com.snishaper.android.feature.rules.ui.RulesScreen
 import com.snishaper.android.feature.routing.ui.RoutingScreen
 import com.snishaper.android.feature.settings.SettingsScreen
+import kotlinx.coroutines.launch
 
 /**
  * 导航图：11 个目的地，与桌面版 Sidebar 顺序一致。
- * M0 为占位壳；各 feature 的真实 UI 随里程碑落地。
+ * 侧边栏只占半屏（fillMaxWidth(0.5f)），点击条目后收起抽屉再进入页面；
+ * 顶栏汉堡按钮随时可唤出。
  */
 private data class Destination(
     val route: String,
@@ -59,21 +69,28 @@ private val destinations = listOf(
     Destination("onboarding", "关于", Icons.Filled.Info),
 )
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SnishaperApp() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: "dashboard"
+    val currentLabel = destinations.firstOrNull { it.route == currentRoute }?.label ?: "SniShaper"
+
+    val drawerState = rememberDrawerState(androidx.compose.material3.DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
     ModalNavigationDrawer(
+        drawerState = drawerState,
         drawerContent = {
-            ModalDrawerSheet {
+            ModalDrawerSheet(modifier = Modifier.fillMaxWidth(0.5f)) {
                 destinations.forEach { dest ->
                     NavigationDrawerItem(
                         label = { Text(dest.label) },
                         icon = { Icon(dest.icon, contentDescription = null) },
                         selected = currentRoute == dest.route,
                         onClick = {
+                            scope.launch { drawerState.close() }
                             navController.navigate(dest.route) {
                                 popUpTo("dashboard") { saveState = true }
                                 launchSingleTop = true
@@ -85,7 +102,18 @@ fun SnishaperApp() {
             }
         },
     ) {
-        Scaffold { padding ->
+        Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text(currentLabel, style = MaterialTheme.typography.titleMedium) },
+                    navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Filled.Menu, contentDescription = "菜单")
+                        }
+                    },
+                )
+            },
+        ) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
                 NavHost(navController = navController, startDestination = "dashboard") {
                     composable("dashboard") { DashboardScreen() }
