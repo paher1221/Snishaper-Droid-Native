@@ -1,0 +1,8 @@
+<resources>
+    <string name="routing_title">Auto routing</string>
+    <string name="routing_enabled">Enabled</string>
+    <string name="routing_disabled">Disabled</string>
+    <string name="routing_domain_count">%1$d domains in rule set</string>
+    <string name="routing_traffic_flow">Live traffic flow</string>
+    <string name="routing_empty">Waiting for traffic…</string>
+</resources>

@@ -23,16 +23,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.snishaper.android.feature.connections.ConnectionsScreen
+import com.snishaper.android.feature.connections.ui.ConnectionsScreen
 import com.snishaper.android.feature.dashboard.ui.DashboardScreen
 import com.snishaper.android.feature.dns.DnsScreen
 import com.snishaper.android.feature.evolution.EvolutionScreen
-import com.snishaper.android.feature.logs.LogsScreen
+import com.snishaper.android.feature.logs.ui.LogsScreen
 import com.snishaper.android.feature.onboarding.OnboardingScreen
 import com.snishaper.android.feature.proxies.ProxiesScreen
 import com.snishaper.android.feature.profiles.ProfilesScreen
-import com.snishaper.android.feature.rules.RulesScreen
-import com.snishaper.android.feature.routing.RoutingScreen
+import com.snishaper.android.feature.rules.ui.RulesScreen
+import com.snishaper.android.feature.routing.ui.RoutingScreen
 import com.snishaper.android.feature.settings.SettingsScreen
 
 /**

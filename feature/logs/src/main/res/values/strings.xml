@@ -1,0 +1,7 @@
+<resources>
+    <string name="logs_title">Logs</string>
+    <string name="logs_pause">Pause</string>
+    <string name="logs_resume">Resume</string>
+    <string name="logs_clear">Clear</string>
+    <string name="logs_search">Filter logs…</string>
+</resources>

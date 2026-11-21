@@ -28,6 +28,10 @@ object DataGraph {
     val proxyRepository: ProxyRepository by lazy { ProxyRepositoryImpl() }
     val tunRepository: TunRepository by lazy { TunRepositoryImpl(::requireContext) }
     val appInfoRepository: AppInfoRepository by lazy { AppInfoRepositoryImpl() }
+    val connectionsRepository: ConnectionsRepository by lazy { ConnectionsRepositoryImpl() }
+    val logsRepository: LogsRepository by lazy { LogsRepositoryImpl() }
+    val rulesRepository: RulesRepository by lazy { RulesRepositoryImpl() }
+    val routingRepository: RoutingRepository by lazy { RoutingRepositoryImpl() }
 
     /** 引擎状态流：仓库层不重复包装，UI 直接收集（引擎是进程级单例）。 */
     val engineStatus get() = SnishaperEngine.status

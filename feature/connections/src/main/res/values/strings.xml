@@ -1,0 +1,5 @@
+<resources>
+    <string name="connections_title">Connections</string>
+    <string name="connections_count">%1$d active</string>
+    <string name="connections_search">Search host, rule, mode…</string>
+</resources>

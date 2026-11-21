@@ -1,0 +1,5 @@
+<resources>
+    <string name="connections_title">Соединения</string>
+    <string name="connections_count">%1$d активных</string>
+    <string name="connections_search">Поиск по хосту, правилу, режиму…</string>
+</resources>

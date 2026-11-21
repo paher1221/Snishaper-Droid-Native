@@ -164,4 +164,33 @@ object SnishaperEngine {
     suspend fun tunStatusJSON(): String = io { requireApp().getTUNStatusJSON() }
 
     suspend fun buildInfo(): BuildInfo = io { BuildInfo.fromJson(requireApp().buildInfoJSON) }
+
+    // ------------------------------------------------------------------
+    // M2：连接 / 日志 / 规则 / 分流（仓库层的类型化透传）
+    // ------------------------------------------------------------------
+
+    suspend fun activeConnectionsJSON(): String = io { requireApp().activeConnectionsJSON }
+
+    suspend fun recentLogs(lines: Int): String = io { requireApp().getRecentLogs(lines) }
+
+    suspend fun clearLogs() = io { requireApp().clearLogs() }
+
+    suspend fun exportDiagnosticsJSON(): String = io { requireApp().exportDiagnosticsJSON() }
+
+    suspend fun siteGroupsJSON(): String = io { requireApp().siteGroupsJSON }
+
+    suspend fun addSiteGroupJSON(json: String): String = io { requireApp().addSiteGroupJSON(json) }
+
+    suspend fun updateSiteGroupJSON(json: String) = io { requireApp().updateSiteGroupJSON(json) }
+
+    suspend fun deleteSiteGroup(id: String) = io { requireApp().deleteSiteGroup(id) }
+
+    suspend fun rulesLayerInfoJSON(): String = io { requireApp().rulesLayerInfoJSON }
+
+    suspend fun revertSiteGroupToUpstream(id: String) = io { requireApp().revertSiteGroupToUpstream(id) }
+
+    suspend fun explainMatchJSON(host: String, ip: String): String =
+        io { requireApp().explainMatchJSON(host, ip) }
+
+    suspend fun autoRoutingStatusJSON(): String = io { requireApp().autoRoutingStatusJSON }
 }
