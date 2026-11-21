@@ -1,17 +1,12 @@
 <resources>
     <string name="dashboard_title">Панель</string>
-    <string name="dashboard_proxy_start">Запустить прокси</string>
-    <string name="dashboard_proxy_stop">Остановить прокси</string>
-    <string name="dashboard_proxy_running">Работает</string>
-    <string name="dashboard_proxy_stopped">Остановлен</string>
+    <string name="dashboard_status_running">Работает</string>
+    <string name="dashboard_status_stopped">Остановлен</string>
     <string name="dashboard_mode_port">Режим: %1$s · Порт: %2$d</string>
     <string name="dashboard_stats_down">Загрузка</string>
     <string name="dashboard_stats_up">Отдача</string>
-    <string name="dashboard_tun_on">TUN-туннель</string>
-    <string name="dashboard_tun_off">TUN-туннель</string>
     <string name="dashboard_tun_unsupported">TUN не поддерживается на этом устройстве</string>
-    <string name="dashboard_tun_starting">TUN запускается…</string>
-    <string name="dashboard_tun_stopped">TUN остановлен</string>
-    <string name="dashboard_tun_failed">Ошибка операции TUN: %1$s</string>
-    <string name="dashboard_proxy_toggle_failed">Ошибка операции прокси: %1$s</string>
+    <string name="dashboard_tun_starting">Запуск…</string>
+    <string name="dashboard_tun_stopped">Остановлен</string>
+    <string name="dashboard_tun_failed">Ошибка операции: %1$s</string>
 </resources>

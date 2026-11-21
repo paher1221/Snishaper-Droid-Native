@@ -16,11 +16,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-/** 代理启停操作的一次性反馈（UI 层用于 toast / snackbar）。 */
-sealed interface ProxyOpEvent {
-    data class Error(val message: String) : ProxyOpEvent
-}
-
 /** TUN 操作的一次性反馈。 */
 sealed interface TunOpEvent {
     data class Error(val message: String) : TunOpEvent
@@ -51,9 +46,6 @@ class DashboardViewModel : ViewModel() {
 
     private val _uiState = MutableStateFlow(DashboardUiState())
     val uiState: StateFlow<DashboardUiState> = _uiState.asStateFlow()
-
-    private val _proxyEvents = MutableStateFlow<ProxyOpEvent?>(null)
-    val proxyEvents: StateFlow<ProxyOpEvent?> = _proxyEvents.asStateFlow()
 
     private val _tunEvents = MutableStateFlow<TunOpEvent?>(null)
     val tunEvents: StateFlow<TunOpEvent?> = _tunEvents.asStateFlow()
@@ -88,7 +80,6 @@ class DashboardViewModel : ViewModel() {
         }
     }
 
-    fun consumeProxyEvent() { _proxyEvents.value = null }
     fun consumeTunEvent() { _tunEvents.value = null }
 
     suspend fun refresh() {
@@ -102,31 +93,30 @@ class DashboardViewModel : ViewModel() {
         }
     }
 
-    fun toggleProxy() {
-        if (_uiState.value.isProxyBusy) return
-        _uiState.update { it.copy(isProxyBusy = true) }
-        viewModelScope.launch {
-            val result = if (_uiState.value.proxyRunning) proxyRepo.stop() else proxyRepo.start()
-            if (result is AppResult.Failure) {
-                _proxyEvents.value = ProxyOpEvent.Error(result.message)
-            }
-            refresh()
-            _uiState.update { it.copy(isProxyBusy = false) }
-        }
-    }
-
     fun toggleTun() {
         if (_uiState.value.isTunBusy) return
         _uiState.update { it.copy(isTunBusy = true) }
         viewModelScope.launch {
             if (_uiState.value.tunStatus.running) {
+                // 一键关：TUN 与代理一起停
                 when (val result = tunRepo.stop()) {
                     is AppResult.Failure -> _tunEvents.value = TunOpEvent.Error(result.message)
-                    is AppResult.Success -> _tunEvents.value = TunOpEvent.Info("tun_stopped")
+                    is AppResult.Success -> {
+                        proxyRepo.stop()
+                        _tunEvents.value = TunOpEvent.Info("tun_stopped")
+                    }
                 }
             } else {
-                // TUN 依赖本地代理监听（引擎 StartTUN 会拒绝），StartProxy 幂等
-                proxyRepo.start()
+                // 一键开：TUN 依赖本地代理监听（引擎 StartTUN 会拒绝），StartProxy 幂等
+                when (val p = proxyRepo.start()) {
+                    is AppResult.Failure -> {
+                        _tunEvents.value = TunOpEvent.Error(p.message)
+                        refresh()
+                        _uiState.update { it.copy(isTunBusy = false) }
+                        return@launch
+                    }
+                    is AppResult.Success -> Unit
+                }
                 when (val result = tunRepo.start()) {
                     is AppResult.Failure -> _tunEvents.value = TunOpEvent.Error(result.message)
                     is AppResult.Success -> when (val value = result.value) {

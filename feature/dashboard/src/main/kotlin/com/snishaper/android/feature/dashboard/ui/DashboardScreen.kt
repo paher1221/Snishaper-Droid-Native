@@ -3,20 +3,14 @@ package com.snishaper.android.feature.dashboard.ui
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material.icons.filled.Stop
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -38,7 +32,6 @@ import android.widget.Toast
 import com.snishaper.android.feature.dashboard.R
 import com.snishaper.android.feature.dashboard.vm.DashboardUiState
 import com.snishaper.android.feature.dashboard.vm.DashboardViewModel
-import com.snishaper.android.feature.dashboard.vm.ProxyOpEvent
 import com.snishaper.android.feature.dashboard.vm.TunOpEvent
 
 /** 与旧版 Dashboard.tsx 一致：空模式显示为 MITM。 */
@@ -56,7 +49,6 @@ private fun formatBytes(bytes: Long): String {
 fun DashboardScreen(modifier: Modifier = Modifier, viewModel: DashboardViewModel = viewModel()) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     val tunEvent by viewModel.tunEvents.collectAsStateWithLifecycle()
-    val proxyEvent by viewModel.proxyEvents.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
     val consentLauncher = rememberLauncherForActivityResult(
@@ -77,9 +69,6 @@ fun DashboardScreen(modifier: Modifier = Modifier, viewModel: DashboardViewModel
         )
         is TunOpEvent.ConsentNeeded, null -> null
     }
-    val proxyToast = (proxyEvent as? ProxyOpEvent.Error)?.let {
-        ToastText(stringResource(R.string.dashboard_proxy_toggle_failed, it.message), short = false)
-    }
 
     LaunchedEffect(tunEvent) {
         if (tunEvent is TunOpEvent.ConsentNeeded) {
@@ -93,12 +82,6 @@ fun DashboardScreen(modifier: Modifier = Modifier, viewModel: DashboardViewModel
         }
         if (tunEvent != null) viewModel.consumeTunEvent()
     }
-    LaunchedEffect(proxyEvent) {
-        proxyToast?.let { toast ->
-            Toast.makeText(context, toast.text, Toast.LENGTH_LONG).show()
-        }
-        if (proxyEvent != null) viewModel.consumeProxyEvent()
-    }
 
     Column(
         modifier = modifier
@@ -107,9 +90,8 @@ fun DashboardScreen(modifier: Modifier = Modifier, viewModel: DashboardViewModel
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        StatusCard(state = state, onToggleProxy = viewModel::toggleProxy)
+        MainCard(state = state, onToggleTun = viewModel::toggleTun)
         TrafficCard(state = state)
-        TunCard(state = state, onToggleTun = viewModel::toggleTun)
     }
 }
 
@@ -120,8 +102,9 @@ private fun tunInfoRes(key: String): Int = when (key) {
     else -> R.string.dashboard_tun_starting
 }
 
+/** 总开关卡片：TUN 开关即代理启停（一键全起 / 一键全停）。 */
 @Composable
-private fun StatusCard(state: DashboardUiState, onToggleProxy: () -> Unit) {
+private fun MainCard(state: DashboardUiState, onToggleTun: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -131,43 +114,49 @@ private fun StatusCard(state: DashboardUiState, onToggleProxy: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.weight(1f),
                 )
-                if (state.isProxyBusy) {
+                if (state.isTunBusy) {
                     CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = 2.dp)
                 }
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = stringResource(
-                        if (state.proxyRunning) R.string.dashboard_proxy_running
-                        else R.string.dashboard_proxy_stopped,
-                    ),
-                    color = if (state.proxyRunning) MaterialTheme.colorScheme.primary
-                    else MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f),
-                )
-                Button(onClick = onToggleProxy, enabled = !state.isProxyBusy) {
-                    Icon(
-                        imageVector = if (state.proxyRunning) Icons.Filled.Stop else Icons.Filled.PlayArrow,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Spacer(Modifier.size(4.dp))
+                Column(Modifier.weight(1f)) {
                     Text(
-                        stringResource(
-                            if (state.proxyRunning) R.string.dashboard_proxy_stop
-                            else R.string.dashboard_proxy_start,
+                        text = stringResource(
+                            if (state.tunStatus.running) R.string.dashboard_status_running
+                            else R.string.dashboard_status_stopped,
                         ),
+                        color = if (state.tunStatus.running) MaterialTheme.colorScheme.primary
+                        else MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyLarge,
                     )
+                    Text(
+                        text = stringResource(
+                            R.string.dashboard_mode_port, displayMode(state.proxyMode), state.listenPort,
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    if (state.tunStatus.message.isNotBlank()) {
+                        Text(
+                            text = state.tunStatus.message,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
                 }
+                Switch(
+                    checked = state.tunStatus.running,
+                    enabled = state.tunStatus.supported && !state.isTunBusy,
+                    onCheckedChange = { onToggleTun() },
+                )
             }
-            Text(
-                text = stringResource(
-                    R.string.dashboard_mode_port, displayMode(state.proxyMode), state.listenPort,
-                ),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (!state.tunStatus.supported) {
+                Text(
+                    text = stringResource(R.string.dashboard_tun_unsupported),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
         }
     }
 }
@@ -191,41 +180,6 @@ private fun TrafficCard(state: DashboardUiState) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
                 Text(text = formatBytes(state.stats.up), style = MaterialTheme.typography.titleMedium)
-            }
-        }
-    }
-}
-
-@Composable
-private fun TunCard(state: DashboardUiState, onToggleTun: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth()) {
-        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(R.string.dashboard_tun_on),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    if (state.tunStatus.message.isNotBlank()) {
-                        Text(
-                            text = state.tunStatus.message,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
-                    }
-                }
-                Switch(
-                    checked = state.tunStatus.running,
-                    enabled = state.tunStatus.supported && !state.isTunBusy,
-                    onCheckedChange = { onToggleTun() },
-                )
-            }
-            if (!state.tunStatus.supported) {
-                Text(
-                    text = stringResource(R.string.dashboard_tun_unsupported),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
             }
         }
     }
