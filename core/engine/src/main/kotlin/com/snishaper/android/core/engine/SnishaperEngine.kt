@@ -193,4 +193,66 @@ object SnishaperEngine {
         io { requireApp().explainMatchJSON(host, ip) }
 
     suspend fun autoRoutingStatusJSON(): String = io { requireApp().autoRoutingStatusJSON }
+
+    // ------------------------------------------------------------------
+    // M3：DNS / ECH / NAT64 / 迁移服务器 / IP 池（仓库层的类型化透传）
+    // ------------------------------------------------------------------
+
+    // DNS 节点
+    suspend fun dnsNodesJSON(): String = io { requireApp().getDNSNodesJSON() }
+
+    suspend fun addDnsNodeJSON(json: String): String = io { requireApp().addDNSNodeJSON(json) }
+
+    suspend fun updateDnsNodeJSON(json: String) = io { requireApp().updateDNSNodeJSON(json) }
+
+    suspend fun deleteDnsNode(id: String) = io { requireApp().deleteDNSNode(id) }
+
+    suspend fun setDnsNodePriority(id: String, index: Int) = io { requireApp().setDNSNodePriority(id, index) }
+
+    suspend fun testDnsNodeJSON(id: String): String = io { requireApp().testDNSNode(id) }
+
+    // ECH 档案
+    suspend fun echProfilesJSON(): String = io { requireApp().getECHProfilesJSON() }
+
+    suspend fun upsertEchProfileJSON(json: String) = io { requireApp().upsertECHProfileJSON(json) }
+
+    suspend fun deleteEchProfile(id: String) = io { requireApp().deleteECHProfile(id) }
+
+    suspend fun fetchEchConfigJSON(domain: String, dohUpstream: String): String =
+        io { requireApp().fetchECHConfigJSON(domain, dohUpstream) }
+
+    // NAT64 档案
+    suspend fun nat64ProfilesJSON(): String = io { requireApp().getNAT64ProfilesJSON() }
+
+    suspend fun addNat64ProfileJSON(json: String): String = io { requireApp().addNAT64ProfileJSON(json) }
+
+    suspend fun updateNat64ProfileJSON(json: String) = io { requireApp().updateNAT64ProfileJSON(json) }
+
+    suspend fun deleteNat64Profile(id: String) = io { requireApp().deleteNAT64Profile(id) }
+
+    suspend fun testNat64ProfileJSON(prefix: String): String = io { requireApp().testNAT64Profile(prefix) }
+
+    // 迁移服务器（引擎无专用方法，走设置文档的 migration_server 键——与旧桥接一致）
+    suspend fun settingsJSON(): String = io { requireApp().getSettingsJSON() }
+
+    suspend fun updateSettingsJSON(json: String) = io { requireApp().updateSettingsJSON(json) }
+
+    suspend fun testMigration(server: String): String = io { requireApp().testMigration(server) }
+
+    suspend fun lastMigrationReportJSON(): String = io { requireApp().lastMigrationReportJSON }
+
+    // IP 池
+    suspend fun ipPoolsJSON(): String = io { requireApp().getIPPoolsJSON() }
+
+    suspend fun updateIpPoolsJSON(json: String) = io { requireApp().updateIPPoolsJSON(json) }
+
+    suspend fun ipPoolStatsJSON(name: String): String = io { requireApp().getIPPoolStatsJSON(name) }
+
+    suspend fun forceFetchIpPoolIPsJSON(name: String): String = io { requireApp().forceFetchIPPoolIPsJSON(name) }
+
+    suspend fun refreshIpPoolJSON(name: String) = io { requireApp().refreshIPPoolJSON(name) }
+
+    suspend fun removeInvalidIpPoolIPsJSON(name: String): Int = io { requireApp().removeInvalidIPPoolIPsJSON(name) }
+
+    suspend fun triggerIpPoolHealthCheckJSON(name: String) = io { requireApp().triggerIPPoolHealthCheckJSON(name) }
 }

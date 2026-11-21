@@ -1,0 +1,18 @@
+<resources>
+    <string name="settings_title">Настройки</string>
+    <string name="ip_pools_title">IP-пулы</string>
+    <string name="ip_pools_subtitle">Списки предпочтительных IP; правила могут закреплять сайты за пулом.</string>
+    <string name="ip_pools_empty">IP-пулов пока нет</string>
+    <string name="ip_pools_ip_count">%1$d IP</string>
+    <string name="ip_pools_fetch">Загрузить</string>
+    <string name="ip_pools_health">Проверка</string>
+    <string name="ip_pools_clean">Очистить</string>
+    <string name="ip_pools_remove">Удалить</string>
+    <string name="ip_pools_add">Добавить пул</string>
+    <string name="ip_pools_name_label">Имя пула</string>
+    <string name="ip_pools_ips_label">IP (по одному в строке)</string>
+    <string name="ip_pools_invalid_name">Недопустимое имя пула</string>
+    <string name="ip_pools_no_ips">IP не указаны</string>
+    <string name="ip_pools_duplicate_name">Пул уже существует</string>
+    <string name="ip_pools_removed">Удалено</string>
+</resources>

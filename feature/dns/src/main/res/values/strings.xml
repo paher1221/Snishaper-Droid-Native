@@ -1,0 +1,21 @@
+<resources>
+    <string name="dns_title">DNS</string>
+    <string name="dns_add_node">Add node</string>
+    <string name="dns_edit_node">Edit node</string>
+    <string name="dns_delete_node">Delete node</string>
+    <string name="dns_no_nodes">No DNS nodes yet</string>
+    <string name="dns_test">Test</string>
+    <string name="dns_test_all">Test all</string>
+    <string name="dns_edit">Edit</string>
+    <string name="dns_delete">Delete</string>
+    <string name="dns_confirm">Confirm</string>
+    <string name="dns_cancel">Cancel</string>
+    <string name="dns_save">Save</string>
+    <string name="dns_failed">Failed</string>
+    <string name="dns_delete_hint">Delete %1$s? This cannot be undone.</string>
+    <string name="dns_node_name">Node name</string>
+    <string name="dns_doh_url">DoH URL</string>
+    <string name="dns_sni_fake">SNI spoof</string>
+    <string name="dns_bootstrap_ips">Bootstrap IPs (one per line)</string>
+    <string name="dns_enabled">Enabled</string>
+</resources>

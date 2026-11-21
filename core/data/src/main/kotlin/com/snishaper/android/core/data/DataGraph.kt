@@ -32,6 +32,11 @@ object DataGraph {
     val logsRepository: LogsRepository by lazy { LogsRepositoryImpl() }
     val rulesRepository: RulesRepository by lazy { RulesRepositoryImpl() }
     val routingRepository: RoutingRepository by lazy { RoutingRepositoryImpl() }
+    val dnsRepository: DnsRepository by lazy { DnsRepositoryImpl() }
+    val echRepository: EchRepository by lazy { EchRepositoryImpl() }
+    val nat64Repository: Nat64Repository by lazy { Nat64RepositoryImpl() }
+    val migrationRepository: MigrationRepository by lazy { MigrationRepositoryImpl() }
+    val ipPoolRepository: IpPoolRepository by lazy { IpPoolRepositoryImpl() }
 
     /** 引擎状态流：仓库层不重复包装，UI 直接收集（引擎是进程级单例）。 */
     val engineStatus get() = SnishaperEngine.status

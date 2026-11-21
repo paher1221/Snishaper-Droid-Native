@@ -1,0 +1,18 @@
+<resources>
+    <string name="settings_title">Settings</string>
+    <string name="ip_pools_title">IP pools</string>
+    <string name="ip_pools_subtitle">Preferred IP lists per pool; rules can pin sites to a pool.</string>
+    <string name="ip_pools_empty">No IP pools yet</string>
+    <string name="ip_pools_ip_count">%1$d IPs</string>
+    <string name="ip_pools_fetch">Fetch</string>
+    <string name="ip_pools_health">Health</string>
+    <string name="ip_pools_clean">Clean</string>
+    <string name="ip_pools_remove">Remove</string>
+    <string name="ip_pools_add">Add pool</string>
+    <string name="ip_pools_name_label">Pool name</string>
+    <string name="ip_pools_ips_label">IPs (one per line)</string>
+    <string name="ip_pools_invalid_name">Invalid pool name</string>
+    <string name="ip_pools_no_ips">No IPs provided</string>
+    <string name="ip_pools_duplicate_name">Pool already exists</string>
+    <string name="ip_pools_removed">Removed</string>
+</resources>

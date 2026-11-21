@@ -1,14 +1,19 @@
 package com.snishaper.android.feature.rules.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -16,6 +21,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,7 +30,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.snishaper.android.core.common.AppResult
+import com.snishaper.android.core.data.DataGraph
 import com.snishaper.android.core.model.CertVerify
+import com.snishaper.android.core.model.EchProfile
+import com.snishaper.android.core.model.Nat64Profile
 import com.snishaper.android.core.model.SiteGroup
 import com.snishaper.android.feature.rules.R
 
@@ -32,7 +42,7 @@ private val MODES = listOf("mitm", "tls-rf", "quic", "transparent", "migration")
 private val DNS_MODES = listOf("", "prefer_ipv4", "allow_suffixes", "allow_spki", "chain_only")
 private val CERT_MODES = listOf("", "strict_real", "allow_names", "allow_suffixes", "allow_spki", "chain_only")
 
-/** 新建/编辑规则表单：覆盖旧版 RuleForm 的核心字段；ECH/NAT64 档案选择器随 M3 换成下拉。 */
+/** 新建/编辑规则表单：覆盖旧版 RuleForm 的核心字段；ECH/NAT64 档案为 M3 下拉选择。 */
 @Composable
 fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup) -> Unit) {
     var name by remember { mutableStateOf(initial.name) }
@@ -55,6 +65,20 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
     var certSuffixes by remember { mutableStateOf(initial.certVerify.suffixes.joinToString(", ")) }
     var certSpki by remember { mutableStateOf(initial.certVerify.spkiSha256.joinToString(", ")) }
     var certAllowUnknown by remember { mutableStateOf(initial.certVerify.allowUnknownAuthority) }
+
+    // M3：ECH / NAT64 档案下拉的数据源（进表单时加载一次）。
+    var echProfiles by remember { mutableStateOf(listOf<EchProfile>()) }
+    var nat64Profiles by remember { mutableStateOf(listOf<Nat64Profile>()) }
+    LaunchedEffect(Unit) {
+        when (val r = DataGraph.echRepository.profiles()) {
+            is AppResult.Success -> echProfiles = r.value
+            is AppResult.Failure -> Unit
+        }
+        when (val r = DataGraph.nat64Repository.profiles()) {
+            is AppResult.Success -> nat64Profiles = r.value
+            is AppResult.Failure -> Unit
+        }
+    }
 
     fun splitList(text: String) = text.split(',', ';', '\n').map { it.trim() }.filter { it.isNotEmpty() }
 
@@ -148,9 +172,11 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
                     Switch(checked = echEnabled, onCheckedChange = { echEnabled = it })
                 }
                 if (echEnabled) {
-                    OutlinedTextField(
-                        value = echProfileId, onValueChange = { echProfileId = it },
-                        label = { Text(stringResource(R.string.rules_field_ech_profile)) }, singleLine = true,
+                    ProfileDropdown(
+                        label = stringResource(R.string.rules_field_ech_profile),
+                        options = echProfiles.map { it.id to it.name },
+                        selectedId = echProfileId,
+                        onSelect = { echProfileId = it },
                     )
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -158,9 +184,11 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
                     Switch(checked = nat64Enabled, onCheckedChange = { nat64Enabled = it })
                 }
                 if (nat64Enabled) {
-                    OutlinedTextField(
-                        value = nat64ProfileId, onValueChange = { nat64ProfileId = it },
-                        label = { Text(stringResource(R.string.rules_field_nat64_profile)) }, singleLine = true,
+                    ProfileDropdown(
+                        label = stringResource(R.string.rules_field_nat64_profile),
+                        options = nat64Profiles.map { it.id to it.name },
+                        selectedId = nat64ProfileId,
+                        onSelect = { nat64ProfileId = it },
                     )
                 }
                 Text(stringResource(R.string.rules_field_cert_verify), style = MaterialTheme.typography.labelMedium)
@@ -228,4 +256,40 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
             TextButton(onClick = onDismiss) { Text(stringResource(R.string.rules_cancel)) }
         },
     )
+}
+
+/** 档案下拉选择器（M3：替代手填 ID；显示名称，保存 ID）。 */
+@Composable
+private fun ProfileDropdown(label: String, options: List<Pair<String, String>>, selectedId: String, onSelect: (String) -> Unit) {
+    var expanded by remember { mutableStateOf(false) }
+    val selectedName = options.firstOrNull { it.first == selectedId }?.second ?: selectedId
+    Box {
+        OutlinedTextField(
+            value = selectedName,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+        )
+        DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, modifier = Modifier.fillMaxWidth()) {
+            if (options.isEmpty()) {
+                DropdownMenuItem(text = { Text("—") }, onClick = { expanded = false })
+            } else {
+                options.forEach { (id, name) ->
+                    DropdownMenuItem(
+                        text = { Text(name.ifBlank { id }, maxLines = 1) },
+                        onClick = { onSelect(id); expanded = false },
+                    )
+                }
+            }
+        }
+        // 透明覆盖层：点击整行展开菜单。
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .clickable { expanded = true },
+        )
+    }
 }

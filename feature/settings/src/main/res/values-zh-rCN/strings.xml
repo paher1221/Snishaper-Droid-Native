@@ -1,0 +1,18 @@
+<resources>
+    <string name="settings_title">设置</string>
+    <string name="ip_pools_title">IP 池</string>
+    <string name="ip_pools_subtitle">每个池维护一份优选 IP 列表，规则可以把站点固定到某个池。</string>
+    <string name="ip_pools_empty">还没有 IP 池</string>
+    <string name="ip_pools_ip_count">%1$d 个 IP</string>
+    <string name="ip_pools_fetch">拉取</string>
+    <string name="ip_pools_health">体检</string>
+    <string name="ip_pools_clean">清理</string>
+    <string name="ip_pools_remove">移除</string>
+    <string name="ip_pools_add">添加池</string>
+    <string name="ip_pools_name_label">池名称</string>
+    <string name="ip_pools_ips_label">IP 列表（每行一个）</string>
+    <string name="ip_pools_invalid_name">池名称无效</string>
+    <string name="ip_pools_no_ips">未填写 IP</string>
+    <string name="ip_pools_duplicate_name">池已存在</string>
+    <string name="ip_pools_removed">已移除</string>
+</resources>

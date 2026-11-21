@@ -1,0 +1,34 @@
+<resources>
+    <string name="proxies_title">Proxies</string>
+    <string name="proxies_migration_title">Migration service</string>
+    <string name="proxies_migration_desc">Fallback server used when the current upstream is unreachable.</string>
+    <string name="proxies_migration_hint">Server address</string>
+    <string name="proxies_save">Save</string>
+    <string name="proxies_test_connect">Test</string>
+    <string name="proxies_ech_management">ECH profiles</string>
+    <string name="proxies_add_ech">Add ECH</string>
+    <string name="proxies_edit_ech">Edit ECH</string>
+    <string name="proxies_delete_ech">Delete ECH profile</string>
+    <string name="proxies_no_ech">No ECH profiles yet</string>
+    <string name="proxies_auto_sync">Auto sync</string>
+    <string name="proxies_static_config">Static config</string>
+    <string name="proxies_nat64_management">NAT64 profiles</string>
+    <string name="proxies_add_nat64">Add NAT64</string>
+    <string name="proxies_edit_nat64">Edit NAT64</string>
+    <string name="proxies_delete_nat64">Delete NAT64 profile</string>
+    <string name="proxies_no_nat64">No NAT64 profiles yet</string>
+    <string name="proxies_test">Test</string>
+    <string name="proxies_edit">Edit</string>
+    <string name="proxies_delete">Delete</string>
+    <string name="proxies_confirm">Confirm</string>
+    <string name="proxies_cancel">Cancel</string>
+    <string name="proxies_delete_confirm">Delete %1$s?</string>
+    <string name="proxies_delete_nat64_confirm">Delete NAT64 profile %1$s?</string>
+    <string name="ech_name">Name</string>
+    <string name="ech_discovery_domain">Discovery domain</string>
+    <string name="ech_doh_upstream">DoH upstream</string>
+    <string name="ech_config">ECH config</string>
+    <string name="ech_auto_update">Auto update</string>
+    <string name="nat64_name">Name</string>
+    <string name="nat64_prefix">NAT64 prefix</string>
+</resources>
