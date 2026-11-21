@@ -36,6 +36,7 @@ import com.snishaper.android.core.model.CertVerify
 import com.snishaper.android.core.model.EchProfile
 import com.snishaper.android.core.model.Nat64Profile
 import com.snishaper.android.core.model.SiteGroup
+import com.snishaper.android.core.design.component.ScrollableFormDialog
 import com.snishaper.android.feature.rules.R
 
 private val MODES = listOf("mitm", "tls-rf", "quic", "transparent", "migration")
@@ -82,14 +83,39 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
 
     fun splitList(text: String) = text.split(',', ';', '\n').map { it.trim() }.filter { it.isNotEmpty() }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (initial.id.isBlank()) R.string.rules_add else R.string.rules_edit)) },
-        text = {
-            Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()).heightIn(max = 480.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-            ) {
+    ScrollableFormDialog(
+        title = stringResource(if (initial.id.isBlank()) R.string.rules_add else R.string.rules_edit),
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.rules_save),
+        dismissLabel = stringResource(R.string.rules_cancel),
+        onConfirm = {
+            onSave(
+                initial.copy(
+                    name = name.trim(),
+                    website = website.trim(),
+                    mode = mode,
+                    upstream = upstream.trim(),
+                    domains = domains,
+                    dnsMode = dnsMode,
+                    sniFake = sniFake.trim(),
+                    enabled = enabled,
+                    useCfPool = useCfPool,
+                    ipPool = ipPool.trim(),
+                    echEnabled = echEnabled,
+                    echProfileId = echProfileId.trim(),
+                    nat64Enabled = nat64Enabled,
+                    nat64ProfileId = nat64ProfileId.trim(),
+                    certVerify = CertVerify(
+                        mode = certMode,
+                        names = splitList(certNames),
+                        suffixes = splitList(certSuffixes),
+                        spkiSha256 = splitList(certSpki),
+                        allowUnknownAuthority = certAllowUnknown,
+                    ),
+                ),
+            )
+        },
+    ) {
                 OutlinedTextField(
                     value = name, onValueChange = { name = it },
                     label = { Text(stringResource(R.string.rules_field_name)) }, singleLine = true,
@@ -221,41 +247,7 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
                     Text(stringResource(R.string.rules_field_cert_unknown), modifier = Modifier.weight(1f))
                     Switch(checked = certAllowUnknown, onCheckedChange = { certAllowUnknown = it })
                 }
-            }
-        },
-        confirmButton = {
-            Button(onClick = {
-                onSave(
-                    initial.copy(
-                        name = name.trim(),
-                        website = website.trim(),
-                        mode = mode,
-                        upstream = upstream.trim(),
-                        domains = domains,
-                        dnsMode = dnsMode,
-                        sniFake = sniFake.trim(),
-                        enabled = enabled,
-                        useCfPool = useCfPool,
-                        ipPool = ipPool.trim(),
-                        echEnabled = echEnabled,
-                        echProfileId = echProfileId.trim(),
-                        nat64Enabled = nat64Enabled,
-                        nat64ProfileId = nat64ProfileId.trim(),
-                        certVerify = CertVerify(
-                            mode = certMode,
-                            names = splitList(certNames),
-                            suffixes = splitList(certSuffixes),
-                            spkiSha256 = splitList(certSpki),
-                            allowUnknownAuthority = certAllowUnknown,
-                        ),
-                    ),
-                )
-            }) { Text(stringResource(R.string.rules_save)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.rules_cancel)) }
-        },
-    )
+    }
 }
 
 /** 档案下拉选择器（M3：替代手填 ID；显示名称，保存 ID）。 */

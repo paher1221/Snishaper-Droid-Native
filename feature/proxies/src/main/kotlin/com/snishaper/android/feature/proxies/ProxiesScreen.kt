@@ -28,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.snishaper.android.core.design.component.ScrollableFormDialog
 import com.snishaper.android.core.model.EchProfile
 import com.snishaper.android.core.model.Nat64Profile
 import com.snishaper.android.feature.proxies.vm.ProxiesViewModel
@@ -241,47 +242,39 @@ private fun EchFormDialog(
     var config by remember { mutableStateOf(initial?.config ?: "") }
     var autoUpdate by remember { mutableStateOf(initial?.autoUpdate ?: true) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (initial == null) R.string.proxies_add_ech else R.string.proxies_edit_ech)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.ech_name)) }, singleLine = true)
-                OutlinedTextField(value = discoveryDomain, onValueChange = { discoveryDomain = it }, label = { Text(stringResource(R.string.ech_discovery_domain)) }, singleLine = true)
-                OutlinedTextField(value = dohUpstream, onValueChange = { dohUpstream = it }, label = { Text(stringResource(R.string.ech_doh_upstream)) }, singleLine = true)
-                OutlinedTextField(
-                    value = config, onValueChange = { config = it },
-                    label = { Text(stringResource(R.string.ech_config)) },
-                    minLines = 2, maxLines = 5,
-                )
-                androidx.compose.material3.FilterChip(
-                    selected = autoUpdate,
-                    onClick = { autoUpdate = !autoUpdate },
-                    label = { Text(stringResource(R.string.ech_auto_update)) },
-                )
-            }
+    ScrollableFormDialog(
+        title = stringResource(if (initial == null) R.string.proxies_add_ech else R.string.proxies_edit_ech),
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.proxies_save),
+        dismissLabel = stringResource(R.string.proxies_cancel),
+        confirmEnabled = name.isNotBlank() && discoveryDomain.isNotBlank(),
+        onConfirm = {
+            onSubmit(
+                EchProfile(
+                    id = initial?.id ?: "",
+                    name = name.trim(),
+                    discoveryDomain = discoveryDomain.trim(),
+                    dohUpstream = dohUpstream.trim(),
+                    config = config.trim(),
+                    autoUpdate = autoUpdate,
+                ),
+            )
         },
-        confirmButton = {
-            Button(
-                onClick = {
-                    onSubmit(
-                        EchProfile(
-                            id = initial?.id ?: "",
-                            name = name.trim(),
-                            discoveryDomain = discoveryDomain.trim(),
-                            dohUpstream = dohUpstream.trim(),
-                            config = config.trim(),
-                            autoUpdate = autoUpdate,
-                        ),
-                    )
-                },
-                enabled = name.isNotBlank() && discoveryDomain.isNotBlank(),
-            ) { Text(stringResource(R.string.proxies_save)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.proxies_cancel)) }
-        },
-    )
+    ) {
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.ech_name)) }, singleLine = true)
+        OutlinedTextField(value = discoveryDomain, onValueChange = { discoveryDomain = it }, label = { Text(stringResource(R.string.ech_discovery_domain)) }, singleLine = true)
+        OutlinedTextField(value = dohUpstream, onValueChange = { dohUpstream = it }, label = { Text(stringResource(R.string.ech_doh_upstream)) }, singleLine = true)
+        OutlinedTextField(
+            value = config, onValueChange = { config = it },
+            label = { Text(stringResource(R.string.ech_config)) },
+            minLines = 2, maxLines = 5,
+        )
+        androidx.compose.material3.FilterChip(
+            selected = autoUpdate,
+            onClick = { autoUpdate = !autoUpdate },
+            label = { Text(stringResource(R.string.ech_auto_update)) },
+        )
+    }
 }
 
 @Composable
@@ -293,23 +286,15 @@ private fun Nat64FormDialog(
     var name by remember { mutableStateOf(initial?.name ?: "") }
     var prefix by remember { mutableStateOf(initial?.prefix ?: "") }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (initial == null) R.string.proxies_add_nat64 else R.string.proxies_edit_nat64)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.nat64_name)) }, singleLine = true)
-                OutlinedTextField(value = prefix, onValueChange = { prefix = it }, label = { Text(stringResource(R.string.nat64_prefix)) }, singleLine = true)
-            }
-        },
-        confirmButton = {
-            Button(
-                onClick = { onSubmit(Nat64Profile(id = initial?.id ?: "", name = name.trim(), prefix = prefix.trim())) },
-                enabled = name.isNotBlank() && prefix.isNotBlank(),
-            ) { Text(stringResource(R.string.proxies_save)) }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.proxies_cancel)) }
-        },
-    )
+    ScrollableFormDialog(
+        title = stringResource(if (initial == null) R.string.proxies_add_nat64 else R.string.proxies_edit_nat64),
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.proxies_save),
+        dismissLabel = stringResource(R.string.proxies_cancel),
+        confirmEnabled = name.isNotBlank() && prefix.isNotBlank(),
+        onConfirm = { onSubmit(Nat64Profile(id = initial?.id ?: "", name = name.trim(), prefix = prefix.trim())) },
+    ) {
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.nat64_name)) }, singleLine = true)
+        OutlinedTextField(value = prefix, onValueChange = { prefix = it }, label = { Text(stringResource(R.string.nat64_prefix)) }, singleLine = true)
+    }
 }

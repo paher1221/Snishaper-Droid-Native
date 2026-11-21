@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.snishaper.android.core.design.component.ScrollableFormDialog
 import com.snishaper.android.core.model.DnsNode
 import com.snishaper.android.feature.dns.vm.DnsViewModel
 
@@ -226,46 +227,39 @@ private fun DnsNodeFormDialog(
     var quic by remember { mutableStateOf(initial?.quic ?: false) }
     var enabled by remember { mutableStateOf(initial?.enabled ?: true) }
 
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(if (initial == null) R.string.dns_add_node else R.string.dns_edit_node)) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.dns_node_name)) }, singleLine = true)
-                OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text(stringResource(R.string.dns_doh_url)) }, singleLine = true)
-                OutlinedTextField(value = sni, onValueChange = { sni = it }, label = { Text(stringResource(R.string.dns_sni_fake)) }, singleLine = true)
-                OutlinedTextField(
-                    value = ips, onValueChange = { ips = it },
-                    label = { Text(stringResource(R.string.dns_bootstrap_ips)) },
-                    minLines = 2, maxLines = 4,
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = enabled, onClick = { enabled = !enabled }, label = { Text(stringResource(R.string.dns_enabled)) })
-                    FilterChip(selected = echEnabled, onClick = { echEnabled = !echEnabled }, label = { Text("ECH") })
-                    FilterChip(selected = quic, onClick = { quic = !quic }, label = { Text("QUIC") })
-                }
-            }
+    ScrollableFormDialog(
+        title = stringResource(if (initial == null) R.string.dns_add_node else R.string.dns_edit_node),
+        onDismiss = onDismiss,
+        confirmLabel = stringResource(R.string.dns_save),
+        dismissLabel = stringResource(R.string.dns_cancel),
+        confirmEnabled = name.isNotBlank() && url.isNotBlank(),
+        onConfirm = {
+            onSubmit(
+                DnsNode(
+                    id = initial?.id ?: "",
+                    name = name.trim(),
+                    url = url.trim(),
+                    sni = sni.trim(),
+                    ips = ips.lines().map { it.trim() }.filter { it.isNotEmpty() },
+                    echEnabled = echEnabled,
+                    quic = quic,
+                    enabled = enabled,
+                ),
+            )
         },
-        confirmButton = {
-            Button(onClick = {
-                onSubmit(
-                    DnsNode(
-                        id = initial?.id ?: "",
-                        name = name.trim(),
-                        url = url.trim(),
-                        sni = sni.trim(),
-                        ips = ips.lines().map { it.trim() }.filter { it.isNotEmpty() },
-                        echEnabled = echEnabled,
-                        quic = quic,
-                        enabled = enabled,
-                    ),
-                )
-            }, enabled = name.isNotBlank() && url.isNotBlank()) {
-                Text(stringResource(R.string.dns_save))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.dns_cancel)) }
-        },
-    )
+    ) {
+        OutlinedTextField(value = name, onValueChange = { name = it }, label = { Text(stringResource(R.string.dns_node_name)) }, singleLine = true)
+        OutlinedTextField(value = url, onValueChange = { url = it }, label = { Text(stringResource(R.string.dns_doh_url)) }, singleLine = true)
+        OutlinedTextField(value = sni, onValueChange = { sni = it }, label = { Text(stringResource(R.string.dns_sni_fake)) }, singleLine = true)
+        OutlinedTextField(
+            value = ips, onValueChange = { ips = it },
+            label = { Text(stringResource(R.string.dns_bootstrap_ips)) },
+            minLines = 2, maxLines = 4,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            FilterChip(selected = enabled, onClick = { enabled = !enabled }, label = { Text(stringResource(R.string.dns_enabled)) })
+            FilterChip(selected = echEnabled, onClick = { echEnabled = !echEnabled }, label = { Text("ECH") })
+            FilterChip(selected = quic, onClick = { quic = !quic }, label = { Text("QUIC") })
+        }
+    }
 }
