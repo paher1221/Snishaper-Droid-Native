@@ -163,8 +163,8 @@ feature ui    Compose（无状态渲染，事件上抛）
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
 | M0 骨架 | Gradle 多模块 + 依赖规则 + 空壳可编译 | ✅ 已完成：本地 `assembleDebug` 通过（含引擎 AAR 打包）；CI 待仓库推送后验证 |
-| M1 引擎贯通 | core:engine/data 迁移 + Dashboard 最小闭环（启动/停止/状态） | 代码完成（提交 9ffb42a，本地 assembleDebug/lint/test 全绿）；待推送 CI 与真机验收：启停代理、状态实时刷新 |
-| M2 核心页 | Connections / Logs / Rules / Routing | 与旧版功能对齐清单逐条勾 |
+| M1 引擎贯通 | core:engine/data 迁移 + Dashboard 最小闭环（启动/停止/状态） | ✅ 已完成：本地 + CI 双绿（run 44853519783），真机验收通过；UI 按用户要求合并为单一 TUN 总开关（开 TUN 一键全起，关 TUN 一键全停） |
+| M2 核心页 | Connections / Logs / Rules / Routing | 代码完成（提交 225d69b，本地 + CI 全绿 run 44856929050）；待真机验收：连接列表/日志流/规则编辑与回退/实时命中 |
 | M3 网络配置 | DNS / ECH / NAT64 / IP 池 / 迁移服务器 | 测试按钮行为与旧版一致 |
 | M4 档案与设置 | Profiles / Settings / 证书 / 导入导出 | 配置导出与桌面版互通 |
 | M5 收尾 | Evolution / Onboarding / 主题×6 / 三语 / 诊断包 | 全功能对齐，发布 CI |
