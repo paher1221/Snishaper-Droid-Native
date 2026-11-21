@@ -29,6 +29,25 @@ data class ConnectionInfo(
     }
 }
 
+/** TLS 分片配置（Go `FragmentConfig`，仅 tls-rf 模式使用）。 */
+@Serializable
+data class FragmentConfig(
+    @SerialName("num_records") val numRecords: Int = 4,
+    @SerialName("num_segments") val numSegments: Int = 1,
+    @SerialName("interval_ms") val intervalMs: Int = 50,
+    @SerialName("mod_minor_ver") val modMinorVer: Boolean = true,
+    @SerialName("oob") val oob: Boolean = false,
+    @SerialName("oob_ex") val oobEx: Boolean = false,
+)
+
+/** 解析规则自带的分片配置；缺失或解析失败时返回默认值。 */
+fun SiteGroup.fragOrDefault(): FragmentConfig =
+    frag?.let { el ->
+        runCatching {
+            Json { ignoreUnknownKeys = true }.decodeFromJsonElement(FragmentConfig.serializer(), el)
+        }.getOrNull()
+    } ?: FragmentConfig()
+
 /** 证书校验策略（Go `CertVerifyPolicy`）。 */
 @Serializable
 data class CertVerify(

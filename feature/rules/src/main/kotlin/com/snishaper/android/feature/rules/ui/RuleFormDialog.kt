@@ -7,10 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -29,21 +26,55 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.snishaper.android.core.common.AppResult
 import com.snishaper.android.core.data.DataGraph
 import com.snishaper.android.core.model.CertVerify
 import com.snishaper.android.core.model.EchProfile
+import com.snishaper.android.core.model.fragOrDefault
 import com.snishaper.android.core.model.Nat64Profile
 import com.snishaper.android.core.model.SiteGroup
 import com.snishaper.android.core.design.component.ScrollableFormDialog
 import com.snishaper.android.feature.rules.R
+import kotlinx.serialization.json.buildJsonObject
+import kotlinx.serialization.json.put
 
-private val MODES = listOf("mitm", "tls-rf", "quic", "transparent", "migration")
-private val DNS_MODES = listOf("", "prefer_ipv4", "allow_suffixes", "allow_spki", "chain_only")
-private val CERT_MODES = listOf("", "strict_real", "allow_names", "allow_suffixes", "allow_spki", "chain_only")
+private data class ModeOption(val id: String, val labelRes: Int)
 
-/** 新建/编辑规则表单：覆盖旧版 RuleForm 的核心字段；ECH/NAT64 档案为 M3 下拉选择。 */
+private val MODES = listOf(
+    ModeOption("mitm", R.string.rules_mode_mitm),
+    ModeOption("tls-rf", R.string.rules_mode_tls_rf),
+    ModeOption("quic", R.string.rules_mode_quic),
+    ModeOption("transparent", R.string.rules_mode_transparent),
+    ModeOption("migration", R.string.rules_mode_migration),
+)
+
+private val DNS_MODES = listOf(
+    ModeOption("", R.string.rules_dns_default),
+    ModeOption("prefer_ipv4", R.string.rules_dns_prefer_ipv4),
+    ModeOption("prefer_ipv6", R.string.rules_dns_prefer_ipv6),
+    ModeOption("ipv4_only", R.string.rules_dns_ipv4_only),
+    ModeOption("ipv6_only", R.string.rules_dns_ipv6_only),
+)
+
+private val CERT_MODES = listOf(
+    ModeOption("", R.string.rules_cert_ignore),
+    ModeOption("strict_real", R.string.rules_cert_strict),
+    ModeOption("allow_names", R.string.rules_cert_names),
+    ModeOption("allow_suffixes", R.string.rules_cert_suffixes),
+    ModeOption("allow_spki", R.string.rules_cert_spki),
+    ModeOption("chain_only", R.string.rules_cert_chain),
+)
+
+/** 各模式可见的设置块（对齐旧版 RuleForm 的条件逻辑）。 */
+private fun showSniFake(mode: String) = mode in setOf("mitm", "quic", "migration")
+private fun showEch(mode: String) = mode in setOf("mitm", "quic")
+private fun showCertVerify(mode: String) = mode in setOf("mitm", "quic", "migration")
+private fun showCfPool(mode: String) = mode in setOf("mitm", "transparent", "tls-rf", "quic")
+private fun showFragment(mode: String) = mode == "tls-rf"
+
+/** 新建/编辑规则表单：按模式显示不同设置；tls-rf 模式带分片参数；ECH/NAT64 档案为下拉选择。 */
 @Composable
 fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup) -> Unit) {
     var name by remember { mutableStateOf(initial.name) }
@@ -67,7 +98,16 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
     var certSpki by remember { mutableStateOf(initial.certVerify.spkiSha256.joinToString(", ")) }
     var certAllowUnknown by remember { mutableStateOf(initial.certVerify.allowUnknownAuthority) }
 
-    // M3：ECH / NAT64 档案下拉的数据源（进表单时加载一次）。
+    // TLS 分片参数（仅 tls-rf 模式）；tcp_only 对应旧版：记录数 1 / 分段数 4。
+    val initFrag = remember { initial.fragOrDefault() }
+    var fragTcpOnly by remember { mutableStateOf(initFrag.numRecords == 1) }
+    var fragNumRecords by remember { mutableStateOf(if (initFrag.numRecords == 1) 4 else initFrag.numRecords) }
+    var fragNumSegments by remember { mutableStateOf(if (initFrag.numRecords == 1) 4 else initFrag.numSegments) }
+    var fragIntervalMs by remember { mutableStateOf(initFrag.intervalMs) }
+    var fragModMinorVer by remember { mutableStateOf(initFrag.modMinorVer) }
+    var fragOob by remember { mutableStateOf(initFrag.oob) }
+
+    // ECH / NAT64 档案下拉的数据源（进表单时加载一次）。
     var echProfiles by remember { mutableStateOf(listOf<EchProfile>()) }
     var nat64Profiles by remember { mutableStateOf(listOf<Nat64Profile>()) }
     LaunchedEffect(Unit) {
@@ -89,6 +129,16 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
         confirmLabel = stringResource(R.string.rules_save),
         dismissLabel = stringResource(R.string.rules_cancel),
         onConfirm = {
+            val fragJson = if (showFragment(mode)) {
+                buildJsonObject {
+                    put("num_records", if (fragTcpOnly) 1 else fragNumRecords)
+                    put("num_segments", if (fragTcpOnly) 4 else fragNumSegments)
+                    put("interval_ms", fragIntervalMs)
+                    put("mod_minor_ver", fragModMinorVer)
+                    put("oob", fragOob)
+                    put("oob_ex", false)
+                }
+            } else null
             onSave(
                 initial.copy(
                     name = name.trim(),
@@ -105,6 +155,7 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
                     echProfileId = echProfileId.trim(),
                     nat64Enabled = nat64Enabled,
                     nat64ProfileId = nat64ProfileId.trim(),
+                    frag = fragJson,
                     certVerify = CertVerify(
                         mode = certMode,
                         names = splitList(certNames),
@@ -116,141 +167,208 @@ fun RuleFormDialog(initial: SiteGroup, onDismiss: () -> Unit, onSave: (SiteGroup
             )
         },
     ) {
+        OutlinedTextField(
+            value = name, onValueChange = { name = it },
+            label = { Text(stringResource(R.string.rules_field_name)) }, singleLine = true,
+        )
+        OutlinedTextField(
+            value = website, onValueChange = { website = it },
+            label = { Text(stringResource(R.string.rules_field_website)) }, singleLine = true,
+        )
+        Text(stringResource(R.string.rules_field_mode), style = MaterialTheme.typography.labelMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            MODES.chunked(3).forEach { rowModes ->
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    rowModes.forEach { m ->
+                        FilterChip(
+                            selected = mode == m.id,
+                            onClick = { mode = m.id },
+                            label = { Text(stringResource(m.labelRes), style = MaterialTheme.typography.labelSmall) },
+                        )
+                    }
+                }
+            }
+        }
+        Text(stringResource(R.string.rules_field_domains), style = MaterialTheme.typography.labelMedium)
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+            OutlinedTextField(
+                value = domainInput, onValueChange = { domainInput = it },
+                placeholder = { Text(stringResource(R.string.rules_field_domain_hint)) },
+                singleLine = true, modifier = Modifier.weight(1f),
+            )
+            Button(onClick = {
+                val parts = domainInput.split(Regex("[\\s,;]+")).filter { it.isNotBlank() }
+                domains = (domains + parts).distinct()
+                domainInput = ""
+            }) { Text(stringResource(R.string.rules_field_domain_add)) }
+        }
+        domains.forEachIndexed { idx, d ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(d, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
+                TextButton(onClick = { domains = domains.filterIndexed { i, _ -> i != idx } }) {
+                    Text(stringResource(R.string.rules_field_domain_remove))
+                }
+            }
+        }
+        OutlinedTextField(
+            value = upstream, onValueChange = { upstream = it },
+            label = { Text(stringResource(R.string.rules_field_upstream)) }, singleLine = true,
+        )
+        Text(stringResource(R.string.rules_field_dns_mode), style = MaterialTheme.typography.labelMedium)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            DNS_MODES.chunked(3).forEach { rowModes ->
+                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    rowModes.forEach { m ->
+                        FilterChip(
+                            selected = dnsMode == m.id,
+                            onClick = { dnsMode = m.id },
+                            label = { Text(stringResource(m.labelRes), style = MaterialTheme.typography.labelSmall) },
+                        )
+                    }
+                }
+            }
+        }
+        if (showSniFake(mode)) {
+            OutlinedTextField(
+                value = sniFake, onValueChange = { sniFake = it },
+                label = { Text(stringResource(R.string.rules_field_sni_fake)) }, singleLine = true,
+            )
+        }
+        if (showCfPool(mode)) {
+            OutlinedTextField(
+                value = ipPool, onValueChange = { ipPool = it },
+                label = { Text(stringResource(R.string.rules_field_ip_pool)) }, singleLine = true,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_field_use_cf_pool), modifier = Modifier.weight(1f))
+                Switch(checked = useCfPool, onCheckedChange = { useCfPool = it })
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.rules_field_enabled), modifier = Modifier.weight(1f))
+            Switch(checked = enabled, onCheckedChange = { enabled = it })
+        }
+        if (showEch(mode)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_field_ech), modifier = Modifier.weight(1f))
+                Switch(checked = echEnabled, onCheckedChange = { echEnabled = it })
+            }
+            if (echEnabled) {
+                ProfileDropdown(
+                    label = stringResource(R.string.rules_field_ech_profile),
+                    options = listOf("" to stringResource(R.string.rules_ech_auto)) +
+                        echProfiles.map { it.id to it.name },
+                    selectedId = echProfileId,
+                    onSelect = { echProfileId = it },
+                )
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(R.string.rules_field_nat64), modifier = Modifier.weight(1f))
+            Switch(checked = nat64Enabled, onCheckedChange = { nat64Enabled = it })
+        }
+        if (nat64Enabled) {
+            ProfileDropdown(
+                label = stringResource(R.string.rules_field_nat64_profile),
+                options = nat64Profiles.map { it.id to it.name },
+                selectedId = nat64ProfileId,
+                onSelect = { nat64ProfileId = it },
+            )
+        }
+        if (showFragment(mode)) {
+            Text(stringResource(R.string.rules_frag_title), style = MaterialTheme.typography.labelMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_frag_tcp_only), modifier = Modifier.weight(1f))
+                Switch(
+                    checked = fragTcpOnly,
+                    onCheckedChange = {
+                        fragTcpOnly = it
+                        if (it) {
+                            fragNumRecords = 1; fragNumSegments = 4
+                        } else {
+                            fragNumRecords = 4; fragNumSegments = 1
+                        }
+                    },
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
                 OutlinedTextField(
-                    value = name, onValueChange = { name = it },
-                    label = { Text(stringResource(R.string.rules_field_name)) }, singleLine = true,
+                    value = (if (fragTcpOnly) 1 else fragNumRecords).toString(),
+                    onValueChange = { fragNumRecords = it.toIntOrNull() ?: 4 },
+                    label = { Text(stringResource(R.string.rules_frag_records)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true, modifier = Modifier.weight(1f), enabled = !fragTcpOnly,
                 )
                 OutlinedTextField(
-                    value = website, onValueChange = { website = it },
-                    label = { Text(stringResource(R.string.rules_field_website)) }, singleLine = true,
+                    value = (if (fragTcpOnly) 4 else fragNumSegments).toString(),
+                    onValueChange = { fragNumSegments = it.toIntOrNull() ?: 1 },
+                    label = { Text(stringResource(R.string.rules_frag_segments)) },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                    singleLine = true, modifier = Modifier.weight(1f), enabled = !fragTcpOnly,
                 )
-                Text(stringResource(R.string.rules_field_mode), style = MaterialTheme.typography.labelMedium)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    MODES.chunked(3).forEach { rowModes ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            rowModes.forEach { m ->
-                                FilterChip(
-                                    selected = mode == m,
-                                    onClick = { mode = m },
-                                    label = { Text(m.uppercase(), style = MaterialTheme.typography.labelSmall) },
-                                )
-                            }
+            }
+            OutlinedTextField(
+                value = fragIntervalMs.toString(),
+                onValueChange = { fragIntervalMs = it.toIntOrNull() ?: 0 },
+                label = { Text(stringResource(R.string.rules_frag_interval)) },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true,
+            )
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_frag_minorver), modifier = Modifier.weight(1f))
+                Switch(checked = fragModMinorVer, onCheckedChange = { fragModMinorVer = it })
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_frag_oob), modifier = Modifier.weight(1f))
+                Switch(checked = fragOob, onCheckedChange = { fragOob = it })
+            }
+            TextButton(onClick = {
+                fragTcpOnly = false; fragNumRecords = 4; fragNumSegments = 1
+                fragIntervalMs = 50; fragModMinorVer = true; fragOob = false
+            }) { Text(stringResource(R.string.rules_frag_reset)) }
+        }
+        if (showCertVerify(mode)) {
+            Text(stringResource(R.string.rules_field_cert_verify), style = MaterialTheme.typography.labelMedium)
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                CERT_MODES.chunked(3).forEach { rowModes ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        rowModes.forEach { m ->
+                            FilterChip(
+                                selected = certMode == m.id,
+                                onClick = { certMode = m.id },
+                                label = { Text(stringResource(m.labelRes), style = MaterialTheme.typography.labelSmall) },
+                            )
                         }
                     }
                 }
-                Text(stringResource(R.string.rules_field_domains), style = MaterialTheme.typography.labelMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = domainInput, onValueChange = { domainInput = it },
-                        placeholder = { Text(stringResource(R.string.rules_field_domain_hint)) },
-                        singleLine = true, modifier = Modifier.weight(1f),
-                    )
-                    Button(onClick = {
-                        val parts = domainInput.split(Regex("[\\s,;]+")).filter { it.isNotBlank() }
-                        domains = (domains + parts).distinct()
-                        domainInput = ""
-                    }) { Text(stringResource(R.string.rules_field_domain_add)) }
-                }
-                domains.forEachIndexed { idx, d ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(d, style = MaterialTheme.typography.bodySmall, modifier = Modifier.weight(1f), maxLines = 1)
-                        TextButton(onClick = { domains = domains.filterIndexed { i, _ -> i != idx } }) {
-                            Text(stringResource(R.string.rules_field_domain_remove))
-                        }
-                    }
-                }
-                OutlinedTextField(
-                    value = upstream, onValueChange = { upstream = it },
-                    label = { Text(stringResource(R.string.rules_field_upstream)) }, singleLine = true,
-                )
-                Text(stringResource(R.string.rules_field_dns_mode), style = MaterialTheme.typography.labelMedium)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    DNS_MODES.chunked(3).forEach { rowModes ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            rowModes.forEach { m ->
-                                FilterChip(
-                                    selected = dnsMode == m,
-                                    onClick = { dnsMode = m },
-                                    label = { Text(m.ifBlank { "default" }, style = MaterialTheme.typography.labelSmall) },
-                                )
-                            }
-                        }
-                    }
-                }
-                OutlinedTextField(
-                    value = sniFake, onValueChange = { sniFake = it },
-                    label = { Text(stringResource(R.string.rules_field_sni_fake)) }, singleLine = true,
-                )
-                OutlinedTextField(
-                    value = ipPool, onValueChange = { ipPool = it },
-                    label = { Text(stringResource(R.string.rules_field_ip_pool)) }, singleLine = true,
-                )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.rules_field_use_cf_pool), modifier = Modifier.weight(1f))
-                    Switch(checked = useCfPool, onCheckedChange = { useCfPool = it })
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.rules_field_enabled), modifier = Modifier.weight(1f))
-                    Switch(checked = enabled, onCheckedChange = { enabled = it })
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.rules_field_ech), modifier = Modifier.weight(1f))
-                    Switch(checked = echEnabled, onCheckedChange = { echEnabled = it })
-                }
-                if (echEnabled) {
-                    ProfileDropdown(
-                        label = stringResource(R.string.rules_field_ech_profile),
-                        options = echProfiles.map { it.id to it.name },
-                        selectedId = echProfileId,
-                        onSelect = { echProfileId = it },
-                    )
-                }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.rules_field_nat64), modifier = Modifier.weight(1f))
-                    Switch(checked = nat64Enabled, onCheckedChange = { nat64Enabled = it })
-                }
-                if (nat64Enabled) {
-                    ProfileDropdown(
-                        label = stringResource(R.string.rules_field_nat64_profile),
-                        options = nat64Profiles.map { it.id to it.name },
-                        selectedId = nat64ProfileId,
-                        onSelect = { nat64ProfileId = it },
-                    )
-                }
-                Text(stringResource(R.string.rules_field_cert_verify), style = MaterialTheme.typography.labelMedium)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    CERT_MODES.chunked(3).forEach { rowModes ->
-                        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                            rowModes.forEach { m ->
-                                FilterChip(
-                                    selected = certMode == m,
-                                    onClick = { certMode = m },
-                                    label = { Text(m.ifBlank { "ignore" }, style = MaterialTheme.typography.labelSmall) },
-                                )
-                            }
-                        }
-                    }
-                }
+            }
+            if (certMode == "allow_names") {
                 OutlinedTextField(
                     value = certNames, onValueChange = { certNames = it },
                     label = { Text(stringResource(R.string.rules_field_cert_names)) }, singleLine = true,
                 )
+            }
+            if (certMode == "allow_suffixes") {
                 OutlinedTextField(
                     value = certSuffixes, onValueChange = { certSuffixes = it },
                     label = { Text(stringResource(R.string.rules_field_cert_suffixes)) }, singleLine = true,
                 )
+            }
+            if (certMode == "allow_spki") {
                 OutlinedTextField(
                     value = certSpki, onValueChange = { certSpki = it },
                     label = { Text(stringResource(R.string.rules_field_cert_spki)) }, singleLine = true,
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(stringResource(R.string.rules_field_cert_unknown), modifier = Modifier.weight(1f))
-                    Switch(checked = certAllowUnknown, onCheckedChange = { certAllowUnknown = it })
-                }
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(R.string.rules_field_cert_unknown), modifier = Modifier.weight(1f))
+                Switch(checked = certAllowUnknown, onCheckedChange = { certAllowUnknown = it })
+            }
+        }
     }
 }
 
-/** 档案下拉选择器（M3：替代手填 ID；显示名称，保存 ID）。 */
+/** 档案下拉选择器（显示名称，保存 ID）。 */
 @Composable
 private fun ProfileDropdown(label: String, options: List<Pair<String, String>>, selectedId: String, onSelect: (String) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
