@@ -1,7 +1,8 @@
 package com.snishaper.android.app
 
-import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
@@ -60,10 +61,7 @@ private data class Destination(
 )
 
 /** 页面切换动画时长（毫秒），与系统原生过渡节奏一致。 */
-private const val NAV_ANIM_MS = 250
-
-/** 页面切换动画缓动曲线，与系统原生一致。 */
-private val NAV_EASING = FastOutSlowInEasing
+private const val NAV_ANIM_MS = 300
 
 private val destinations = listOf(
     Destination("dashboard", "仪表盘", Icons.Outlined.Home),
@@ -126,23 +124,25 @@ fun SnishaperApp() {
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
                 // 原生风格的水平滑动过渡（Material 共享轴 X）：
-                // 前进 = 新页从右滑入、旧页向左退出；返回 = 反向。
-                // 纯位移不加透明度：避免整屏 alpha 混合掉帧，也避免与
-                // 系统预测性返回的缩放动画叠加导致返回时动画不一致。
+                // 前进 = 新页从右滑入、旧页向左淡出；返回 = 反向。
                 NavHost(
                     navController = navController,
                     startDestination = "dashboard",
                     enterTransition = {
-                        slideInHorizontally(tween(NAV_ANIM_MS, easing = NAV_EASING)) { it }
+                        slideInHorizontally(tween(NAV_ANIM_MS)) { it } +
+                            fadeIn(tween(NAV_ANIM_MS))
                     },
                     exitTransition = {
-                        slideOutHorizontally(tween(NAV_ANIM_MS, easing = NAV_EASING)) { -it / 4 }
+                        slideOutHorizontally(tween(NAV_ANIM_MS)) { -it / 3 } +
+                            fadeOut(tween(NAV_ANIM_MS))
                     },
                     popEnterTransition = {
-                        slideInHorizontally(tween(NAV_ANIM_MS, easing = NAV_EASING)) { -it / 4 }
+                        slideInHorizontally(tween(NAV_ANIM_MS)) { -it / 3 } +
+                            fadeIn(tween(NAV_ANIM_MS))
                     },
                     popExitTransition = {
-                        slideOutHorizontally(tween(NAV_ANIM_MS, easing = NAV_EASING)) { it }
+                        slideOutHorizontally(tween(NAV_ANIM_MS)) { it } +
+                            fadeOut(tween(NAV_ANIM_MS))
                     },
                 ) {
                     composable("dashboard") { DashboardScreen() }
