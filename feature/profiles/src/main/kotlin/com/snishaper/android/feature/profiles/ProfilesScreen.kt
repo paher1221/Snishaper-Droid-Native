@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -144,22 +145,27 @@ fun ProfilesScreen(modifier: Modifier = Modifier, viewModel: ProfilesViewModel =
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 )
                             }
-                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Row(horizontalArrangement = Arrangement.spacedBy(4.dp), modifier = Modifier.fillMaxWidth()) {
                                 TextButton(
                                     onClick = { viewModel.requestSwitch(profile.name) },
                                     enabled = !state.busy && !isActive,
-                                ) { Text(stringResource(R.string.profiles_switch)) }
+                                    contentPadding = PaddingValues(horizontal = 8.dp),
+                                ) { Text(stringResource(R.string.profiles_switch), style = MaterialTheme.typography.labelMedium) }
                                 TextButton(
                                     onClick = { viewModel.openNameDialog(ProfilesUiState.NameDialog.Mode.RENAME, profile.name) },
                                     enabled = !state.busy,
-                                ) { Text(stringResource(R.string.profiles_rename)) }
+                                    contentPadding = PaddingValues(horizontal = 8.dp),
+                                ) { Text(stringResource(R.string.profiles_rename), style = MaterialTheme.typography.labelMedium) }
                                 TextButton(
                                     onClick = { viewModel.openNameDialog(ProfilesUiState.NameDialog.Mode.DUPLICATE, profile.name) },
                                     enabled = !state.busy,
-                                ) { Text(stringResource(R.string.profiles_duplicate)) }
-                                TextButton(onClick = { viewModel.export(profile.name) }, enabled = !state.busy) {
-                                    Text(stringResource(R.string.profiles_export))
-                                }
+                                    contentPadding = PaddingValues(horizontal = 8.dp),
+                                ) { Text(stringResource(R.string.profiles_duplicate), style = MaterialTheme.typography.labelMedium) }
+                                TextButton(
+                                    onClick = { viewModel.export(profile.name) },
+                                    enabled = !state.busy,
+                                    contentPadding = PaddingValues(horizontal = 8.dp),
+                                ) { Text(stringResource(R.string.profiles_export), style = MaterialTheme.typography.labelMedium) }
                             }
                         }
                     }

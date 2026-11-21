@@ -4,10 +4,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -87,9 +89,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
         SectionTitle(stringResource(R.string.settings_general))
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                // 端口
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(Modifier.weight(1f)) {
+                // 端口（窄屏堆叠：标题在上，控件在下）
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column {
                         Text(stringResource(R.string.settings_port), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         Text(
                             stringResource(R.string.settings_port_desc),
@@ -97,21 +99,23 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    OutlinedTextField(
-                        value = state.port,
-                        onValueChange = { viewModel.portChanged(it) },
-                        modifier = Modifier.padding(top = 0.dp),
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.settings_port_label)) },
-                    )
-                    Button(onClick = { viewModel.applyPort() }) {
-                        Text(stringResource(R.string.settings_apply))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = state.port,
+                            onValueChange = { viewModel.portChanged(it) },
+                            modifier = Modifier.width(140.dp),
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.settings_port_label)) },
+                        )
+                        Button(onClick = { viewModel.applyPort() }) {
+                            Text(stringResource(R.string.settings_apply))
+                        }
                     }
                 }
 
                 // 语言
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(Modifier.weight(1f)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column {
                         Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         Text(
                             stringResource(R.string.settings_language_desc),
@@ -124,14 +128,15 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
                             TextButton(
                                 onClick = { viewModel.languageChanged(code) },
                                 enabled = state.language != code,
-                            ) { Text(label) }
+                                contentPadding = PaddingValues(horizontal = 8.dp),
+                            ) { Text(label, style = MaterialTheme.typography.labelMedium) }
                         }
                     }
                 }
 
                 // 外观
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(Modifier.weight(1f)) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column {
                         Text(stringResource(R.string.settings_appearance), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         Text(
                             stringResource(R.string.settings_appearance_desc),
@@ -148,7 +153,8 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
                             TextButton(
                                 onClick = { viewModel.appearanceChanged(mode) },
                                 enabled = state.appearance != mode,
-                            ) { Text(stringResource(labelRes)) }
+                                contentPadding = PaddingValues(horizontal = 8.dp),
+                            ) { Text(stringResource(labelRes), style = MaterialTheme.typography.labelMedium) }
                         }
                     }
                 }
@@ -187,8 +193,9 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
         )
         Card(Modifier.fillMaxWidth()) {
             Column(Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Column(Modifier.weight(1f)) {
+                // MTU（窄屏堆叠：标题在上，控件在下）
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column {
                         Text(stringResource(R.string.settings_mtu), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         Text(
                             stringResource(R.string.settings_mtu_desc),
@@ -196,14 +203,17 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    OutlinedTextField(
-                        value = state.mtu,
-                        onValueChange = { viewModel.mtuChanged(it) },
-                        singleLine = true,
-                        label = { Text(stringResource(R.string.settings_mtu_label)) },
-                    )
-                    Button(onClick = { viewModel.applyMtu() }) {
-                        Text(stringResource(R.string.settings_apply))
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedTextField(
+                            value = state.mtu,
+                            onValueChange = { viewModel.mtuChanged(it) },
+                            modifier = Modifier.width(140.dp),
+                            singleLine = true,
+                            label = { Text(stringResource(R.string.settings_mtu_label)) },
+                        )
+                        Button(onClick = { viewModel.applyMtu() }) {
+                            Text(stringResource(R.string.settings_apply))
+                        }
                     }
                 }
                 Text(
