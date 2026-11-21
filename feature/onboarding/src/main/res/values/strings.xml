@@ -1,0 +1,25 @@
+<resources>
+    <string name="about_title">关于 SniShaper</string>
+    <string name="about_subtitle">安全、快速的网络连接工具</string>
+    <string name="about_version">应用版本</string>
+    <string name="about_core_version">内核版本</string>
+    <string name="about_go_version">Go 版本</string>
+    <string name="about_platform">平台</string>
+    <string name="about_channel">发布通道</string>
+    <string name="about_channel_stable">稳定版</string>
+    <string name="about_channel_beta">测试版</string>
+    <string name="about_channel_alpha">内测版</string>
+    <string name="about_channel_rc">候选版</string>
+    <string name="about_features">核心特性</string>
+    <string name="about_feature_ech">ECH 加密</string>
+    <string name="about_feature_ech_desc">基于 Cloudflare ECH 的加密客户端握手，连接更隐蔽</string>
+    <string name="about_feature_fast">快速探测</string>
+    <string name="about_feature_fast_desc">自动优选 Cloudflare 与自建 IP 池中的最优节点</string>
+    <string name="about_feature_open">开源开放</string>
+    <string name="about_feature_open_desc">核心与前端全部开源，欢迎参与共建</string>
+    <string name="about_community">社区</string>
+    <string name="about_website">官方网站</string>
+    <string name="about_releases">版本发布</string>
+    <string name="about_open">打开</string>
+    <string name="about_copyright">Copyleft © 2025-2026 SniShaper Team</string>
+</resources>

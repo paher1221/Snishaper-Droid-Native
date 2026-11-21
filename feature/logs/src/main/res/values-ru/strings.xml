@@ -1,7 +1,0 @@
-<resources>
-    <string name="logs_title">Журнал</string>
-    <string name="logs_pause">Пауза</string>
-    <string name="logs_resume">Продолжить</string>
-    <string name="logs_clear">Очистить</string>
-    <string name="logs_search">Фильтр журнала…</string>
-</resources>

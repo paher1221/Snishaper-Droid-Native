@@ -23,6 +23,11 @@ interface SettingsRepository {
     suspend fun appearanceMode(): AppResult<String>
     suspend fun setAppearanceMode(mode: String): AppResult<Unit>
 
+    /** 配色主题（引擎设置文档 theme 键；"" = 未选择，跟随动态取色）。 */
+    suspend fun colorScheme(): AppResult<String>
+    suspend fun setColorScheme(id: String): AppResult<Unit>
+    suspend fun clearColorScheme(): AppResult<Unit>
+
     suspend fun autoUpdateRules(): AppResult<Boolean>
     suspend fun setAutoUpdateRules(enabled: Boolean): AppResult<Unit>
 
@@ -74,6 +79,18 @@ internal class SettingsRepositoryImpl : SettingsRepository {
 
     override suspend fun setAppearanceMode(mode: String): AppResult<Unit> =
         patchSettings("appearance_mode", mode)
+
+    override suspend fun colorScheme(): AppResult<String> =
+        AppResult.of { settingsString("theme", "") }
+
+    override suspend fun setColorScheme(id: String): AppResult<Unit> =
+        patchSettings("theme", id)
+
+    override suspend fun clearColorScheme(): AppResult<Unit> = AppResult.of {
+        val doc = runCatching { JSONObject(SnishaperEngine.settingsJSON()) }.getOrElse { JSONObject() }
+        doc.remove("theme")
+        SnishaperEngine.updateSettingsJSON(doc.toString())
+    }
 
     override suspend fun autoUpdateRules(): AppResult<Boolean> = AppResult.of {
         runCatching { JSONObject(SnishaperEngine.settingsJSON()).optBoolean("auto_update_rules", false) }

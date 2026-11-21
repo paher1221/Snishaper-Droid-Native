@@ -6,6 +6,8 @@ import com.snishaper.android.core.common.AppResult
 import com.snishaper.android.core.data.DataGraph
 import com.snishaper.android.core.design.theme.AppearanceController
 import com.snishaper.android.core.design.theme.AppearanceMode
+import com.snishaper.android.core.design.theme.ColorSchemeId
+import com.snishaper.android.core.design.theme.ThemeController
 import com.snishaper.android.core.model.CaInstallStatus
 import com.snishaper.android.core.model.CloudflareIpStat
 import com.snishaper.android.core.model.InstalledCert
@@ -34,8 +36,8 @@ data class SettingsUiState(
 
     // ---- 通用 ----
     val port: String = "",
-    val language: String = "",
     val appearance: AppearanceMode = AppearanceMode.SYSTEM,
+    val colorScheme: ColorSchemeId? = null,
     val autoUpdateRules: Boolean = false,
     val generalMessage: String? = null,
 
@@ -212,15 +214,15 @@ class SettingsViewModel : ViewModel() {
                 is AppResult.Success -> r.value
                 is AppResult.Failure -> 0
             }
-            val language = when (val r = settingsRepo.language()) {
-                is AppResult.Success -> r.value
-                is AppResult.Failure -> ""
-            }
             val appearance = when (val r = settingsRepo.appearanceMode()) {
                 is AppResult.Success -> AppearanceMode.entries.firstOrNull {
                     it.name.equals(r.value, ignoreCase = true)
                 } ?: AppearanceMode.SYSTEM
                 is AppResult.Failure -> AppearanceMode.SYSTEM
+            }
+            val colorScheme = when (val r = settingsRepo.colorScheme()) {
+                is AppResult.Success -> ColorSchemeId.fromWire(r.value)
+                is AppResult.Failure -> null
             }
             val autoUpdate = when (val r = settingsRepo.autoUpdateRules()) {
                 is AppResult.Success -> r.value
@@ -229,13 +231,14 @@ class SettingsViewModel : ViewModel() {
             _uiState.update {
                 it.copy(
                     port = if (port > 0) port.toString() else "",
-                    language = language,
                     appearance = appearance,
+                    colorScheme = colorScheme,
                     autoUpdateRules = autoUpdate,
                 )
             }
-            // 引擎里的外观模式同步到全局控制器（设置页是唯一写入口）
+            // 引擎里的外观模式与配色同步到全局控制器（设置页是唯一写入口）
             AppearanceController.set(appearance)
+            ThemeController.set(colorScheme)
         }
     }
 
@@ -257,21 +260,23 @@ class SettingsViewModel : ViewModel() {
         }
     }
 
-    fun languageChanged(lang: String) {
-        _uiState.update { it.copy(language = lang) }
+    fun appearanceChanged(mode: AppearanceMode) {
+        _uiState.update { it.copy(appearance = mode) }
+        AppearanceController.set(mode)
         viewModelScope.launch {
-            val result = settingsRepo.setLanguage(lang)
+            val result = settingsRepo.setAppearanceMode(mode.name.lowercase())
             if (result is AppResult.Failure) {
                 _uiState.update { it.copy(generalMessage = result.message) }
             }
         }
     }
 
-    fun appearanceChanged(mode: AppearanceMode) {
-        _uiState.update { it.copy(appearance = mode) }
-        AppearanceController.set(mode)
+    /** 配色选择：null = 恢复动态取色（Android 12+）。 */
+    fun colorSchemeChanged(id: ColorSchemeId?) {
+        _uiState.update { it.copy(colorScheme = id) }
+        ThemeController.set(id)
         viewModelScope.launch {
-            val result = settingsRepo.setAppearanceMode(mode.name.lowercase())
+            val result = id?.let { settingsRepo.setColorScheme(it.wire) } ?: settingsRepo.clearColorScheme()
             if (result is AppResult.Failure) {
                 _uiState.update { it.copy(generalMessage = result.message) }
             }

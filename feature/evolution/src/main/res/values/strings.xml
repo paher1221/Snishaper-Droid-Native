@@ -1,0 +1,36 @@
+<resources>
+    <string name="evolution_title">演进模式</string>
+    <string name="evolution_subtitle">自动探测域名连通性并生成规则</string>
+    <string name="evolution_tab_test">测试</string>
+    <string name="evolution_tab_rules">规则</string>
+    <string name="evolution_tab_results">结果</string>
+    <string name="evolution_domain_list">域名列表</string>
+    <string name="evolution_domain_count">%1$d 个域名</string>
+    <string name="evolution_domains_hint">每行一个域名</string>
+    <string name="evolution_enable_ipv6">启用 IPv6</string>
+    <string name="evolution_ipv6_warn">（当前网络不支持）</string>
+    <string name="evolution_start">开始测试</string>
+    <string name="evolution_stop">停止测试</string>
+    <string name="evolution_progress">测试进度</string>
+    <string name="evolution_test_flow">测试流程</string>
+    <string name="evolution_test_flow_desc">依次尝试多种连通方式，命中后可生成对应规则</string>
+    <string name="evolution_empty_rules">暂无生成的规则</string>
+    <string name="evolution_empty_rules_desc">完成一次测试后，命中的方法会出现在这里</string>
+    <string name="evolution_empty_results">暂无测试结果</string>
+    <string name="evolution_empty_results_desc">开始测试后，每个域名的探测明细会显示在这里</string>
+    <string name="evolution_applied_count">已应用 %1$d / %2$d</string>
+    <string name="evolution_applied">已应用</string>
+    <string name="evolution_apply">转为规则</string>
+    <string name="evolution_confirm_title">应用为正式规则</string>
+    <string name="evolution_confirm_desc">确认把该临时规则写入站点分组？应用后立即生效。</string>
+    <string name="evolution_confirm_apply">确认应用</string>
+    <string name="evolution_reachable">可达</string>
+    <string name="evolution_unreachable">不可达</string>
+    <string name="evolution_delay">延迟 %1$d ms</string>
+    <string name="evolution_best_ip">最佳 IP %1$s</string>
+    <string name="evolution_cloudflare">Cloudflare</string>
+    <string name="evolution_success_fail">成功 %1$d · 失败 %2$d</string>
+    <string name="evolution_err_empty">请先填写至少一个域名</string>
+    <string name="evolution_applied_ok">规则已应用</string>
+    <string name="common_cancel">取消</string>
+</resources>

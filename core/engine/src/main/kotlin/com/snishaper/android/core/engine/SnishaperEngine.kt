@@ -322,4 +322,18 @@ object SnishaperEngine {
     suspend fun triggerCFHealthCheck() = io { requireApp().triggerCFHealthCheck() }
 
     suspend fun removeInvalidCFIPs(): Int = io { requireApp().removeInvalidCFIPs() }
+
+    // ------------------------------------------------------------------
+    // M5：演进模式（仓库层的类型化透传；进度经 Listener.onEvolutionProgress
+    // 推入 [evolution] StateFlow，JSON 原文在 :core:model 解析）
+    // ------------------------------------------------------------------
+
+    suspend fun startEvolutionTest(domainsJSON: String, enableIPv6: Boolean) =
+        io { requireApp().startEvolutionTest(domainsJSON, enableIPv6) }
+
+    suspend fun stopEvolutionTest() = io { requireApp().stopEvolutionTest() }
+
+    suspend fun evolutionStatusJSON(): String = io { requireApp().evolutionStatusJSON }
+
+    suspend fun applyEvolutionRule(ruleId: String) = io { requireApp().applyEvolutionRule(ruleId) }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
@@ -22,6 +23,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -29,10 +31,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.snishaper.android.feature.logs.R
@@ -60,6 +65,20 @@ fun LogsScreen(modifier: Modifier = Modifier, viewModel: LogsViewModel = viewMod
     val state by viewModel.uiState.collectAsStateWithLifecycle()
     var search by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
+    val context = LocalContext.current
+
+    // 诊断包：引擎生成 zip 后，让用户选目标位置另存
+    val diagExportLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument("application/zip"),
+    ) { uri ->
+        if (uri != null) viewModel.writePendingDiagnostics(uri, context.contentResolver)
+        else viewModel.cancelPendingDiagnostics()
+    }
+    LaunchedEffect(state.pendingDiagnosticsPath) {
+        if (state.pendingDiagnosticsPath != null) {
+            diagExportLauncher.launch("snishaper-diagnostics.zip")
+        }
+    }
 
     val filtered = state.lines.filter { it.lowercase().contains(search.lowercase()) }
 
@@ -99,6 +118,24 @@ fun LogsScreen(modifier: Modifier = Modifier, viewModel: LogsViewModel = viewMod
             singleLine = true,
             placeholder = { Text(stringResource(R.string.logs_search)) },
         )
+        TextButton(onClick = { viewModel.exportDiagnostics() }) {
+            Icon(
+                Icons.Filled.Shield,
+                contentDescription = null,
+                modifier = Modifier.size(16.dp),
+            )
+            Text(stringResource(R.string.logs_diagnostics))
+        }
+        state.diagnosticsMessage?.let { msg ->
+            Text(
+                text = when (msg) {
+                    "diag_ok" -> stringResource(R.string.logs_diag_ok)
+                    else -> stringResource(R.string.logs_diag_failed, msg)
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.primary,
+            )
+        }
         LazyColumn(state = listState, verticalArrangement = Arrangement.spacedBy(2.dp)) {
             items(filtered) { line ->
                 LogLine(parseLine(line))

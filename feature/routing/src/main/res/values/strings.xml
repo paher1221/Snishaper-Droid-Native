@@ -1,8 +1,8 @@
 <resources>
-    <string name="routing_title">Auto routing</string>
-    <string name="routing_enabled">Enabled</string>
-    <string name="routing_disabled">Disabled</string>
-    <string name="routing_domain_count">%1$d domains in rule set</string>
-    <string name="routing_traffic_flow">Live traffic flow</string>
-    <string name="routing_empty">Waiting for traffic…</string>
+    <string name="routing_title">自动分流</string>
+    <string name="routing_enabled">已启用</string>
+    <string name="routing_disabled">未启用</string>
+    <string name="routing_domain_count">规则集包含 %1$d 个域名</string>
+    <string name="routing_traffic_flow">实时流量命中</string>
+    <string name="routing_empty">等待流量…</string>
 </resources>

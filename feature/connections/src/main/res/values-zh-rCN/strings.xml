@@ -1,5 +1,0 @@
-<resources>
-    <string name="connections_title">连接</string>
-    <string name="connections_count">%1$d 个活动</string>
-    <string name="connections_search">搜索主机、规则、模式…</string>
-</resources>

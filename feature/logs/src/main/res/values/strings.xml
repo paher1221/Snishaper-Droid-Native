@@ -1,7 +1,10 @@
 <resources>
-    <string name="logs_title">Logs</string>
-    <string name="logs_pause">Pause</string>
-    <string name="logs_resume">Resume</string>
-    <string name="logs_clear">Clear</string>
-    <string name="logs_search">Filter logs…</string>
+    <string name="logs_title">日志</string>
+    <string name="logs_pause">暂停</string>
+    <string name="logs_resume">继续</string>
+    <string name="logs_clear">清空</string>
+    <string name="logs_search">过滤日志…</string>
+    <string name="logs_diagnostics">导出诊断包</string>
+    <string name="logs_diag_ok">诊断包已导出</string>
+    <string name="logs_diag_failed">诊断包导出失败：%1$s</string>
 </resources>

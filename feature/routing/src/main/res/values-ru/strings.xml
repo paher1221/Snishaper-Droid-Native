@@ -1,8 +1,0 @@
-<resources>
-    <string name="routing_title">Автомаршрутизация</string>
-    <string name="routing_enabled">Включена</string>
-    <string name="routing_disabled">Выключена</string>
-    <string name="routing_domain_count">Доменов в наборе правил: %1$d</string>
-    <string name="routing_traffic_flow">Поток трафика в реальном времени</string>
-    <string name="routing_empty">Ожидание трафика…</string>
-</resources>

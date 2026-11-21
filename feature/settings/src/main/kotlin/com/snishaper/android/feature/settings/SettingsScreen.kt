@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.snishaper.android.core.design.theme.AppearanceMode
+import com.snishaper.android.core.design.theme.ColorSchemeId
 import com.snishaper.android.feature.settings.vm.SettingsViewModel
 
 /**
@@ -113,23 +114,31 @@ fun SettingsScreen(modifier: Modifier = Modifier, viewModel: SettingsViewModel =
                     }
                 }
 
-                // 语言
+                // 配色主题（6 套，对齐桌面版；未选择时 Android 12+ 动态取色）
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Column {
-                        Text(stringResource(R.string.settings_language), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
+                        Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Bold)
                         Text(
-                            stringResource(R.string.settings_language_desc),
+                            stringResource(R.string.settings_theme_desc),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
-                    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                        listOf("zh" to "中文", "en" to "English", "ru" to "Русский").forEach { (code, label) ->
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        listOf(
+                            null to R.string.settings_theme_dynamic,
+                            ColorSchemeId.DEFAULT to R.string.settings_theme_default,
+                            ColorSchemeId.SNISHAPER to R.string.settings_theme_snishaper,
+                            ColorSchemeId.FOREST to R.string.settings_theme_forest,
+                            ColorSchemeId.SUNSET to R.string.settings_theme_sunset,
+                            ColorSchemeId.OCEAN to R.string.settings_theme_ocean,
+                            ColorSchemeId.GRAPHITE to R.string.settings_theme_graphite,
+                        ).forEach { (id, labelRes) ->
                             TextButton(
-                                onClick = { viewModel.languageChanged(code) },
-                                enabled = state.language != code,
+                                onClick = { viewModel.colorSchemeChanged(id) },
+                                enabled = state.colorScheme != id,
                                 contentPadding = PaddingValues(horizontal = 8.dp),
-                            ) { Text(label, style = MaterialTheme.typography.labelMedium) }
+                            ) { Text(stringResource(labelRes), style = MaterialTheme.typography.labelMedium) }
                         }
                     }
                 }
