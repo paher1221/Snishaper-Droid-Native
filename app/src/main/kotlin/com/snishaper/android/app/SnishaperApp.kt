@@ -1,5 +1,10 @@
 package com.snishaper.android.app
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,6 +59,9 @@ private data class Destination(
     val label: String,
     val icon: ImageVector,
 )
+
+/** 页面切换动画时长（毫秒），与系统原生过渡节奏一致。 */
+private const val NAV_ANIM_MS = 300
 
 private val destinations = listOf(
     Destination("dashboard", "仪表盘", Icons.Outlined.Home),
@@ -115,7 +123,28 @@ fun SnishaperApp() {
             },
         ) { padding ->
             Box(Modifier.fillMaxSize().padding(padding)) {
-                NavHost(navController = navController, startDestination = "dashboard") {
+                // 原生风格的水平滑动过渡（Material 共享轴 X）：
+                // 前进 = 新页从右滑入、旧页向左淡出；返回 = 反向。
+                NavHost(
+                    navController = navController,
+                    startDestination = "dashboard",
+                    enterTransition = {
+                        slideInHorizontally(tween(NAV_ANIM_MS)) { it } +
+                            fadeIn(tween(NAV_ANIM_MS))
+                    },
+                    exitTransition = {
+                        slideOutHorizontally(tween(NAV_ANIM_MS)) { -it / 3 } +
+                            fadeOut(tween(NAV_ANIM_MS))
+                    },
+                    popEnterTransition = {
+                        slideInHorizontally(tween(NAV_ANIM_MS)) { -it / 3 } +
+                            fadeIn(tween(NAV_ANIM_MS))
+                    },
+                    popExitTransition = {
+                        slideOutHorizontally(tween(NAV_ANIM_MS)) { it } +
+                            fadeOut(tween(NAV_ANIM_MS))
+                    },
+                ) {
                     composable("dashboard") { DashboardScreen() }
                     composable("connections") { ConnectionsScreen() }
                     composable("rules") { RulesScreen() }
