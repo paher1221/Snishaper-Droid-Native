@@ -1,0 +1,20 @@
+<resources>
+    <string name="profiles_title">Профили</string>
+    <string name="profiles_active">Активный: %1$s</string>
+    <string name="profiles_none_active">Нет активного профиля</string>
+    <string name="profiles_empty">Профилей пока нет</string>
+    <string name="profiles_updated">Обновлён: %1$s</string>
+    <string name="profiles_create">Создать</string>
+    <string name="profiles_rename">Переименовать</string>
+    <string name="profiles_duplicate">Дублировать</string>
+    <string name="profiles_switch">Переключить</string>
+    <string name="profiles_export">Экспорт</string>
+    <string name="profiles_import">Импорт</string>
+    <string name="profiles_cancel">Отмена</string>
+    <string name="profiles_name_label">Имя профиля</string>
+    <string name="profiles_create_title">Создать профиль</string>
+    <string name="profiles_rename_title">Переименовать профиль</string>
+    <string name="profiles_duplicate_title">Дублировать профиль</string>
+    <string name="profiles_switch_confirm_title">Переключить профиль</string>
+    <string name="profiles_switch_confirm_desc">Переключиться на профиль «%1$s»? Прокси перезагрузит конфигурацию.</string>
+</resources>

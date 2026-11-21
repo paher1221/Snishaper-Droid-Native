@@ -15,4 +15,55 @@
     <string name="ip_pools_no_ips">未填写 IP</string>
     <string name="ip_pools_duplicate_name">池已存在</string>
     <string name="ip_pools_removed">已移除</string>
+
+    <string name="settings_general">通用</string>
+    <string name="settings_port">监听端口</string>
+    <string name="settings_port_desc">HTTP 代理监听端口（1–65535）</string>
+    <string name="settings_port_label">端口</string>
+    <string name="settings_apply">应用</string>
+    <string name="settings_language">语言</string>
+    <string name="settings_language_desc">作用于引擎通知；界面语言跟随系统</string>
+    <string name="settings_appearance">外观</string>
+    <string name="settings_appearance_desc">浅色 / 深色 / 跟随系统</string>
+    <string name="settings_appearance_light">浅色</string>
+    <string name="settings_appearance_dark">深色</string>
+    <string name="settings_appearance_system">系统</string>
+    <string name="settings_auto_update_rules">自动更新规则</string>
+    <string name="settings_auto_update_rules_desc">自动保持上游规则组为最新</string>
+
+    <string name="settings_tun">TUN</string>
+    <string name="settings_tun_running">运行中</string>
+    <string name="settings_tun_off">未运行</string>
+    <string name="settings_mtu">MTU</string>
+    <string name="settings_mtu_desc">TUN 网卡 MTU（576–9000）</string>
+    <string name="settings_mtu_label">MTU</string>
+    <string name="settings_tun_hint">TUN 模式通过 VpnService 接管系统流量；仅在网络不稳定时调整 MTU。</string>
+
+    <string name="settings_security">证书</string>
+    <string name="settings_ca_reset">重置 CA</string>
+    <string name="settings_ca_reset_desc">重新生成 MITM 证书，之后需在设备上重新安装</string>
+    <string name="settings_ca_export">导出 CA 证书</string>
+    <string name="settings_export">导出</string>
+    <string name="settings_ca_not_installed">CA 未安装</string>
+    <string name="settings_certs_count">已安装 %1$d 张证书</string>
+    <string name="settings_certs_empty">尚未安装证书</string>
+    <string name="settings_delete">删除</string>
+
+    <string name="settings_ipv6">IPv6</string>
+    <string name="settings_ipv6_refresh">刷新</string>
+    <string name="settings_ipv6_ok">IPv6 可用</string>
+    <string name="settings_ipv6_ok_desc">当前网络支持 IPv6 连接。</string>
+    <string name="settings_ipv6_bad">IPv6 不可用</string>
+    <string name="settings_ipv6_bad_desc">当前网络没有可用的 IPv6 路由。</string>
+
+    <string name="settings_cf_pool">Cloudflare 池</string>
+    <string name="settings_cf_health">体检</string>
+    <string name="settings_cf_count">%1$d 个 IP</string>
+    <string name="settings_cf_fetch">立即拉取</string>
+    <string name="settings_cf_empty">还没有 IP——拉取以填充池</string>
+
+    <string name="settings_transfer">配置导入导出</string>
+    <string name="settings_transfer_desc">把完整配置导出为 JSON 备份，或导入备份恢复设置。</string>
+    <string name="settings_transfer_export">导出配置</string>
+    <string name="settings_transfer_import">导入配置</string>
 </resources>

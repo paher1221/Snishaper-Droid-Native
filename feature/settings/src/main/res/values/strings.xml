@@ -15,4 +15,55 @@
     <string name="ip_pools_no_ips">No IPs provided</string>
     <string name="ip_pools_duplicate_name">Pool already exists</string>
     <string name="ip_pools_removed">Removed</string>
+
+    <string name="settings_general">General</string>
+    <string name="settings_port">Listen port</string>
+    <string name="settings_port_desc">HTTP proxy listen port (1–65535)</string>
+    <string name="settings_port_label">Port</string>
+    <string name="settings_apply">Apply</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_desc">Applies to engine notices; UI language follows the device</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_appearance_desc">Light / dark / follow system</string>
+    <string name="settings_appearance_light">Light</string>
+    <string name="settings_appearance_dark">Dark</string>
+    <string name="settings_appearance_system">System</string>
+    <string name="settings_auto_update_rules">Auto-update rules</string>
+    <string name="settings_auto_update_rules_desc">Keep upstream rule groups refreshed automatically</string>
+
+    <string name="settings_tun">TUN</string>
+    <string name="settings_tun_running">Running</string>
+    <string name="settings_tun_off">Off</string>
+    <string name="settings_mtu">MTU</string>
+    <string name="settings_mtu_desc">TUN interface MTU (576–9000)</string>
+    <string name="settings_mtu_label">MTU</string>
+    <string name="settings_tun_hint">TUN mode captures system traffic through the VpnService; adjust MTU only if the tunnel is unstable.</string>
+
+    <string name="settings_security">Certificates</string>
+    <string name="settings_ca_reset">Regenerate CA</string>
+    <string name="settings_ca_reset_desc">Replaces the MITM CA; reinstall it on the device afterwards</string>
+    <string name="settings_ca_export">Export CA certificate</string>
+    <string name="settings_export">Export</string>
+    <string name="settings_ca_not_installed">CA not installed</string>
+    <string name="settings_certs_count">%1$d certificate(s) installed</string>
+    <string name="settings_certs_empty">No certificates installed</string>
+    <string name="settings_delete">Delete</string>
+
+    <string name="settings_ipv6">IPv6</string>
+    <string name="settings_ipv6_refresh">Refresh</string>
+    <string name="settings_ipv6_ok">IPv6 available</string>
+    <string name="settings_ipv6_ok_desc">The current network supports IPv6 connectivity.</string>
+    <string name="settings_ipv6_bad">IPv6 unavailable</string>
+    <string name="settings_ipv6_bad_desc">The current network has no usable IPv6 route.</string>
+
+    <string name="settings_cf_pool">Cloudflare pool</string>
+    <string name="settings_cf_health">Health check</string>
+    <string name="settings_cf_count">%1$d IPs</string>
+    <string name="settings_cf_fetch">Fetch now</string>
+    <string name="settings_cf_empty">No IPs yet — fetch to populate the pool</string>
+
+    <string name="settings_transfer">Config import / export</string>
+    <string name="settings_transfer_desc">Export the full configuration bundle as JSON, or import one to restore settings.</string>
+    <string name="settings_transfer_export">Export config</string>
+    <string name="settings_transfer_import">Import config</string>
 </resources>

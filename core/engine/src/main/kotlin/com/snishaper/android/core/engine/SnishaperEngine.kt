@@ -255,4 +255,71 @@ object SnishaperEngine {
     suspend fun removeInvalidIpPoolIPsJSON(name: String): Int = io { requireApp().removeInvalidIPPoolIPsJSON(name) }
 
     suspend fun triggerIpPoolHealthCheckJSON(name: String) = io { requireApp().triggerIPPoolHealthCheckJSON(name) }
+
+    // ------------------------------------------------------------------
+    // M4：档案 / 证书 / 配置导入导出 / 通用设置（仓库层的类型化透传）
+    // ------------------------------------------------------------------
+
+    // 配置档案
+    suspend fun profilesJSON(): String = io { requireApp().listProfilesJSON() }
+
+    suspend fun activeProfileJSON(): String = io { requireApp().activeProfileJSON }
+
+    suspend fun createProfileJSON(name: String): String = io { requireApp().createProfileJSON(name) }
+
+    suspend fun renameProfileJSON(oldName: String, newName: String) =
+        io { requireApp().renameProfileJSON(oldName, newName) }
+
+    suspend fun duplicateProfileJSON(source: String, newName: String) =
+        io { requireApp().duplicateProfileJSON(source, newName) }
+
+    suspend fun switchProfileJSON(name: String) = io { requireApp().switchProfileJSON(name) }
+
+    /** 返回档案 bundle JSON 原文（旧桥接 ExportProfile 保持字符串形状）。 */
+    suspend fun exportProfileJSON(name: String): String = io { requireApp().exportProfileJSON(name) }
+
+    suspend fun importProfileJSON(content: String): String = io { requireApp().importProfileJSON(content) }
+
+    // CA 证书
+    suspend fun installCA() = io { requireApp().installCA() }
+
+    suspend fun regenerateCert() = io { requireApp().regenerateCert() }
+
+    suspend fun uninstallCert(token: String) = io { requireApp().uninstallCert(token) }
+
+    suspend fun caInstallStatusJSON(): String = io { requireApp().getCAInstallStatusJSON() }
+
+    suspend fun installedCertsJSON(): String = io { requireApp().getInstalledCertsJSON() }
+
+    suspend fun caCertPEM(): String = io { requireApp().getCACertPEM() }
+
+    suspend fun exportCert(): String = io { requireApp().exportCert() }
+
+    // 配置导入导出（ExportConfig / ExportDiagnostics 返回原文，由调用方落盘）
+    suspend fun exportConfigJSON(): String = io { requireApp().exportConfigJSON() }
+
+    suspend fun importConfigWithSummaryJSON(content: String): String =
+        io { requireApp().importConfigWithSummaryJSON(content) }
+
+    // 通用设置
+    suspend fun checkPortAvailable(port: Int): Boolean = io { requireApp().checkPortAvailable(port) }
+
+    suspend fun tunConfigJSON(): String = io { requireApp().getTUNConfigJSON() }
+
+    suspend fun updateTunConfigJSON(json: String) = io { requireApp().updateTUNConfigJSON(json) }
+
+    suspend fun ipv6Available(): Boolean = io { requireApp().getIPv6Available() }
+
+    suspend fun refreshIPv6Check(): Boolean = io { requireApp().refreshIPv6Check() }
+
+    // Cloudflare 池（保留名池的独立统计入口）
+    suspend fun cloudflareConfigJSON(): String = io { requireApp().getCloudflareConfigJSON() }
+
+    suspend fun cloudflareIpStatsJSON(): String = io { requireApp().getCloudflareIPStatsJSON() }
+
+    suspend fun forceFetchCloudflareIPs() = io { requireApp().forceFetchCloudflareIPs() }
+
+    suspend fun triggerCFHealthCheck() = io { requireApp().triggerCFHealthCheck() }
+
+    suspend fun removeInvalidCFIPs(): Int = io { requireApp().removeInvalidCFIPs() }
 }
